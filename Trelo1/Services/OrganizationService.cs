@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,12 +14,8 @@ namespace Trelo1.Services
         private readonly TreloDbContext _db;
         public OrganizationService(TreloDbContext db)
         {
-            db = _db;
+            _db = db;
         }
-/*        public void AddUserToOrganization(int userid, int boardId)
-        {
-            
-        }*/
 
         public void CreateOrganization(Organization organization)
         {
@@ -41,16 +38,18 @@ namespace Trelo1.Services
                 }
             }
         }
-
-/*        public void DeleteUserFromOrganization(int userId, int organizationId)
+        public void AddBoardToOrg(int boardId, int orgId)
         {
-            if(userId != 0)
+            if(boardId != 0 && orgId != 0)
             {
-                var organizationBoards = _db.Organizations.FirstOrDefault(o => o.Id == organizationId).Boards;
-                var userBoard = _db.Users.FirstOrDefault(u => u.Id == userId).Boards.;
-                var result = organizationBoards.Except(userBoard);
-                if(result.Count() == 0 || result.Count()<.)
+                var organization = _db.Organizations.Include(o=>o.Boards).FirstOrDefault(o => o.Id == orgId);
+                var board = _db.Boards.FirstOrDefault(b => b.Id == boardId);
+                if (organization != null && board != null)
+                {
+                    organization.Boards.Add(board);
+                    _db.SaveChanges();
+                }
             }
-        }*/
+        }
     }
 }

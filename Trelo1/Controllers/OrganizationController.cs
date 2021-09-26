@@ -1,0 +1,40 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Trelo1.Interfaces;
+using Trelo1.Models;
+
+namespace Trelo1.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class OrganizationController : ControllerBase
+    {
+        private readonly IOrganizationService _organizationService;
+        public OrganizationController(IOrganizationService organizationService)
+        {
+            _organizationService = organizationService;
+        }
+        [HttpPost]
+        public IActionResult CreateOrg(Organization organization)
+        {
+            _organizationService.CreateOrganization(organization);
+            return Ok();
+        }
+        [HttpDelete]
+        public IActionResult DeleteOrg(Organization organization)
+        {
+            _organizationService.CreateOrganization(organization);
+            return Ok();
+        }
+        [HttpPost]
+        public IActionResult AddBoardToOrg(int boardId, int orgId)
+        {
+            _organizationService.AddBoardToOrg(boardId, orgId);
+            return Ok();
+        }
+    }
+}

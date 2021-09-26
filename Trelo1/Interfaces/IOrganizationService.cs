@@ -10,7 +10,6 @@ namespace Trelo1.Interfaces
     {
         void CreateOrganization(Organization organization);
         void DeleteOrganization(int organizationId);
-/*        void AddUserToOrganization(int userid, int boardId);*/
-/*        void DeleteUserFromOrganization(int userId, int organizationId);*/
+        void AddBoardToOrg(int boardId, int orgId);
     }
 }
