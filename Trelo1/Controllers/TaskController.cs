@@ -22,7 +22,8 @@ namespace Trelo1.Controllers
         {
             _taskService = taskService;
             config = new MapperConfiguration(cfg => {
-                cfg.CreateMap<UserTask, TaskViewModel>();
+                cfg.CreateMap<UserTask, TaskViewModel>()
+                .ForMember("AssignedUserId", opt => opt.MapFrom(c => c.AssignedUser.Id));
             });
             config.CreateMapper();
             mapper = new Mapper(config);
@@ -42,17 +43,19 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        public IEnumerable<UserTask> GetBoardTasks(int boardId)
+        public IEnumerable<TaskViewModel> GetBoardTasks(int boardId)
         {
             IEnumerable<UserTask> tasks = _taskService.GetBoardTasks(boardId);
-            return tasks;
+            IEnumerable<TaskViewModel> tasksVM = mapper.Map<IEnumerable<TaskViewModel>>(tasks);
+            return tasksVM;
         }
         
         [HttpGet]
-        public IEnumerable<UserTask> GetOrganizationTasks(int organizationId)
+        public IEnumerable<TaskViewModel> GetOrganizationTasks(int organizationId)
         {
             IEnumerable<UserTask> tasks = _taskService.GetOrganizationTasks(organizationId);
-            return tasks;
+            IEnumerable<TaskViewModel> tasksVM = mapper.Map<IEnumerable<TaskViewModel>>(tasks);
+            return tasksVM;
         }
         
         [HttpGet]

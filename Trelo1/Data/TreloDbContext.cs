@@ -17,7 +17,6 @@ namespace Trelo1.Data
         public DbSet<UserTask> Tasks { get; set; }
         public DbSet<Board> Boards { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<UsersTasks> UsersTasks { get; set; }
         public DbSet<Organization> Organizations  { get; set; }
     }
 }

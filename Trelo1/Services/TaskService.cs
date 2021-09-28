@@ -47,7 +47,7 @@ namespace Trelo1.Services
         {
             if(boardId != 0)
             {
-                var boardTask = _db.Boards.FirstOrDefault(b => b.Id == boardId).UserTasks;
+                var boardTask = _db.Boards.Include(u=>u.UserTasks).FirstOrDefault(b => b.Id == boardId).UserTasks;
                 return boardTask;
             } 
             else
