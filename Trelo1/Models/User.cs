@@ -13,12 +13,9 @@ namespace Trelo1.Models
         
         public string FullName { get; set; }
 
-        [Required]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         
-        [Required]
-        [StringLength(17,MinimumLength = 5)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
         

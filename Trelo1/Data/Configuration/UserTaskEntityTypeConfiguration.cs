@@ -8,13 +8,15 @@ using Trelo1.Models;
 
 namespace Trelo1.Data.Configuration
 {
-    /*public class UserTaskEntityTypeConfiguration : IEntityTypeConfiguration<UserTask>
+    public class UserTaskEntityTypeConfiguration : IEntityTypeConfiguration<UserTask>
     {
-        *//*public void Configure(EntityTypeBuilder<UserTask> builder)
+        public void Configure(EntityTypeBuilder<UserTask> builder)
         {
-            builder.HasOne(t=>t.AssignedUser).
-                .Property(t=>t.AssignedUser)
-                .
-        }*//*
-    }*/
+            builder.ToTable("Tasks").HasKey(p => p.Id);
+            builder.HasOne(p => p.Board).WithMany(p => p.UserTasks).HasForeignKey(p => p.BoardId);
+            builder.HasOne(p => p.AssignedUser).WithMany(p => p.UserTasks).HasForeignKey(p => p.AssignedUserId);
+            builder.Property(p => p.Name).IsRequired();
+                
+        }
+    }
 }

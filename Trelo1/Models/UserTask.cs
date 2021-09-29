@@ -9,7 +9,7 @@ namespace Trelo1.Models
 {
     public class UserTask
     {
-        [Key]
+
         public int Id { get; set; }
 
         public string Name { get; set; }
@@ -22,13 +22,13 @@ namespace Trelo1.Models
 
         public DateTime? DueDate { get; set; }
 
-        [ForeignKey("AssignedUserId")]
+
         public int? AssignedUserId { get; set; }
         public User AssignedUser { get; set; }
 
         public Status Status { get; set; }
 
-        [ForeignKey("BoardId")]
+
         public int BoardId { get; set; }
         public Board Board { get; set; }
     }
