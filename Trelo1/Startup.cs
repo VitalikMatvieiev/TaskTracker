@@ -16,6 +16,8 @@ using System.Text.Json.Serialization;
 using TreloDAL.Repository.IRepository;
 using TreloDAL.Repository;
 using TreloDAL.UnitOfWork;
+using AutoMapper;
+using TreloBLL;
 
 namespace Trelo1
 {
@@ -42,6 +44,13 @@ namespace Trelo1
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<UnitOfWork>();
+
+            var mapperConfiguration = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile(new MappingProfile());
+            });
+            IMapper mapper = mapperConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
