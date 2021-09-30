@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Trelo1.Models;
+using TreloDAL.Models;
 
-namespace Trelo1.Data.Configuration
+namespace TreloDAL.Data.Configuration
 {
     public class UserTaskEntityTypeConfiguration : IEntityTypeConfiguration<UserTask>
     {

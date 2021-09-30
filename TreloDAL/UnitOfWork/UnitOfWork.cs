@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Trelo1.Data;
+using TreloDAL.Data;
 using TreloDAL.Repository;
 using TreloDAL.Repository.IRepository;
 

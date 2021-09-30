@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Trelo1.Data;
-using Trelo1.Models;
+using TreloDAL.Data;
+using TreloDAL.Models;
 
 namespace TreloDAL.Repository
 {

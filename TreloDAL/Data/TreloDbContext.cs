@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Trelo1.Data.Configuration;
-using Trelo1.Models;
+using TreloDAL.Data.Configuration;
+using TreloDAL.Models;
 
-namespace Trelo1.Data
+namespace TreloDAL.Data
 {
     public class TreloDbContext : DbContext
     {
@@ -26,5 +26,6 @@ namespace Trelo1.Data
         public DbSet<Board> Boards { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Organization> Organizations  { get; set; }
+        public DbSet<TestModelv> TestModelvs { get; set; }
     }
 }

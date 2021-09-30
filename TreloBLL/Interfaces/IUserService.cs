@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Trelo1.Models;
+
+using TreloDAL.Models;
 
 namespace Trelo1.Interfaces
 {

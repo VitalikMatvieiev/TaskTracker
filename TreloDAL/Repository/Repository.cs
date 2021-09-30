@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Trelo1.Data;
+using TreloDAL.Data;
 using TreloDAL.Repository.IRepository;
 
 namespace TreloDAL.Repository

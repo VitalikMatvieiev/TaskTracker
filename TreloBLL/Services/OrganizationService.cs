@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Trelo1.Data;
+using TreloDAL.Data;
 using Trelo1.Interfaces;
-using Trelo1.Models;
+
 using TreloDAL.UnitOfWork;
+using TreloDAL.Models;
 
 namespace Trelo1.Services
 {

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
-using Trelo1.Models;
 using Trelo1.Models.ViewModel;
+using TreloDAL.Models;
 
 namespace Trelo1.Controllers
 {
