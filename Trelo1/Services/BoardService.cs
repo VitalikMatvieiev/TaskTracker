@@ -25,10 +25,6 @@ namespace Trelo1.Services
 
                 if (board != null)
                 {
-                    if (board.Users == null)
-                    {
-                        board.Users = new List<User>();
-                    }
                     board.Users.Add(user);
                 }
                 _db.SaveChanges();
@@ -39,11 +35,6 @@ namespace Trelo1.Services
         {
             if(board != null)
             {
-                
-                if (board.UserTasks == null)
-                {
-                    board.UserTasks = new List<UserTask>();
-                }
                 _db.Boards.Add(board);
                 _db.SaveChanges();
             }
@@ -68,10 +59,6 @@ namespace Trelo1.Services
 
                 if (board != null)
                 {
-                    if(board.Users == null)
-                    {
-                        return;
-                    } 
                     board.Users.Remove(user);
                 }
                 _db.SaveChanges();

@@ -9,6 +9,19 @@ namespace Trelo1.Models
 {
     public class Board
     {
+        public Board()
+        {
+            if (Users == null)
+            {
+                Users = new List<User>();
+            }
+
+            if (UserTasks == null)
+            {
+                UserTasks = new List<UserTask>();
+            }
+        }
+        
         [Key]
         public int Id { get; set; }
 
