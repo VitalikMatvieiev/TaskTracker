@@ -8,16 +8,22 @@ using Trelo1.Interfaces;
 
 using TreloDAL.UnitOfWork;
 using TreloDAL.Models;
+using TreloBLL.DtoModel;
+using AutoMapper;
 
 namespace Trelo1.Services
 {
     public class BoardService : IBoardService
     {
         private readonly UnitOfWork _unitOfWork;
-        public BoardService(UnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+
+        public BoardService(UnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
+
         public void AddUserToBoard(int userId, int boardId)
         {
             if (userId != 0 && boardId != 0)
@@ -33,10 +39,11 @@ namespace Trelo1.Services
             }
         }
 
-        public void CreateBoard(Board board)
+        public void CreateBoard(BoardDto boardDto)
         {
-            if(board != null)
+            if(boardDto != null)
             {
+                var board = _mapper.Map<Board>(boardDto);
                 _unitOfWork.Boards.Create(board);
                 _unitOfWork.SaveChanges();
             }
@@ -65,6 +72,13 @@ namespace Trelo1.Services
                 }
                 _unitOfWork.SaveChanges();
             }
+        }
+
+        public List<BoardDto> GetBoards()
+        {
+            var boards = _unitOfWork.Boards.GetAll(includeProperties: "UserTasks,Organization");
+            var boardDto = _mapper.Map<List<BoardDto>>(boards);
+            return boardDto;
         }
     }
 }

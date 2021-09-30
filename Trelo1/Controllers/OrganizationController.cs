@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
+using TreloBLL.DtoModel;
 
-using TreloDAL.Models;
 
 namespace Trelo1.Controllers
 {
@@ -20,7 +20,7 @@ namespace Trelo1.Controllers
             _organizationService = organizationService;
         }
         [HttpPost]
-        public IActionResult CreateOrg(Organization organization)
+        public IActionResult CreateOrg(OrganiztionDto organization)
         {
             _organizationService.CreateOrganization(organization);
             return Ok();

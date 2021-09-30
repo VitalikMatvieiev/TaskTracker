@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TreloBLL.DtoModel;
 using TreloDAL.Models;
 
 namespace Trelo1.Interfaces
 {
     public interface ITaskService
     {
-        void Create(UserTask userTask);
+        void Create(TaskDto userTask);
         void Delete(int id);
         void AssignUserToTask(int taskId, int userId);
-        UserTask GetTask(int taskId);
-        IEnumerable<UserTask> GetUserTasks(int userId);
-        IEnumerable<UserTask> GetBoardTasks(int boardId);
-        IEnumerable<UserTask> GetOrganizationTasks(int organizationId);
+        TaskDto GetTask(int taskId);
+        IEnumerable<TaskDto> GetUserTasks(int userId);
+        IEnumerable<TaskDto> GetBoardTasks(int boardId);
+        IEnumerable<TaskDto> GetOrganizationTasks(int organizationId);
     }
 }

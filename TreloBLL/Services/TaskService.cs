@@ -8,15 +8,20 @@ using Trelo1.Interfaces;
 
 using TreloDAL.UnitOfWork;
 using TreloDAL.Models;
+using AutoMapper;
+using TreloBLL.DtoModel;
 
 namespace Trelo1.Services
 {
     public class TaskService : ITaskService
     {
         private readonly UnitOfWork _unitOfWork;
-        public TaskService(UnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+
+        public TaskService(UnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public void AssignUserToTask(int taskId, int userId)
@@ -27,10 +32,11 @@ namespace Trelo1.Services
             _unitOfWork.SaveChanges();
         }
 
-        public void Create(UserTask userTask)
+        public void Create(TaskDto userTaskDto)
         {
-            if(userTask != null)
+            if(userTaskDto != null)
             {
+                var userTask = _mapper.Map<UserTask>(userTaskDto);
                 _unitOfWork.UserTasks.Create(userTask);
                 _unitOfWork.SaveChanges();
             }
@@ -46,12 +52,13 @@ namespace Trelo1.Services
             }
         }
 
-        public IEnumerable<UserTask> GetBoardTasks(int boardId)
+        public IEnumerable<TaskDto> GetBoardTasks(int boardId)
         {
             if(boardId != 0)
             {
                 var boardTask = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId, includeProperties: "UserTasks").UserTasks;
-                return boardTask;
+                var boardTaskDto = _mapper.Map<List<TaskDto>>(boardTask);
+                return boardTaskDto;
             } 
             else
             {
@@ -59,17 +66,20 @@ namespace Trelo1.Services
             }
         }
 
-        public IEnumerable<UserTask> GetOrganizationTasks(int organizationId)
+        public IEnumerable<TaskDto> GetOrganizationTasks(int organizationId)
         {
             if (organizationId != 0)
             {
                 var boardInOrganization = _unitOfWork.Boards.GetAll(o => o.OrganizationId == organizationId, includeProperties: "UserTasks");
+                
                 List<UserTask> tasks = new List<UserTask>();
                 foreach (var board in boardInOrganization)
                 {
                     tasks.AddRange(board.UserTasks);
                 }
-                return tasks;
+
+                var taskDto = _mapper.Map<List<TaskDto>>(tasks);
+                return taskDto;
             }
             else
             {
@@ -77,12 +87,13 @@ namespace Trelo1.Services
             }
         }
 
-        public UserTask GetTask(int taskId)
+        public TaskDto GetTask(int taskId)
         {
             if(taskId != 0)
             {
                 var task = _unitOfWork.UserTasks.FirstOrDefault(t => t.Id == taskId);
-                return task;
+                var taskDto = _mapper.Map<TaskDto>(task);
+                return taskDto;
             }
             else
             {
@@ -90,12 +101,13 @@ namespace Trelo1.Services
             }
         }
 
-        public IEnumerable<UserTask> GetUserTasks(int userId)
+        public IEnumerable<TaskDto> GetUserTasks(int userId)
         {
             if (userId != 0)
             {
                 var taskList = _unitOfWork.Users.FirstOrDefault(t => t.Id == userId, includeProperties: "UserTasks").UserTasks;
-                return taskList;
+                var tasksDto = _mapper.Map<List<TaskDto>>(taskList);
+                return tasksDto;
             }
             else
             {

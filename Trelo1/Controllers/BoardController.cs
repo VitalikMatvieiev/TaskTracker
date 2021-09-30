@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
-using TreloDAL.Models;
+using TreloBLL.DtoModel;
 
 namespace Trelo1.Controllers
 {
@@ -19,8 +19,14 @@ namespace Trelo1.Controllers
             _boardService = boardService;
         }
 
+        [HttpGet]
+        public IEnumerable<BoardDto> GetAllBoards()
+        {
+            return _boardService.GetBoards();
+        }
+
         [HttpPost]
-        public IActionResult CreateBoard(Board board)
+        public IActionResult CreateBoard(BoardDto board)
         {
             if (board != null)
             {

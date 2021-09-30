@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using TreloDAL.Models;
 
-namespace Trelo1.Models.ViewModel
+namespace TreloBLL.DtoModel
 {
     public class UserDto
     {
+        public int Id { get; set; }
         public string FullName { get; set; }
 
         public string Email { get; set; }

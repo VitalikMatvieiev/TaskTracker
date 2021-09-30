@@ -12,7 +12,7 @@ namespace TreloBLL
         public MappingProfile()
         {
             CreateMap<Organization, OrganiztionDto>().ReverseMap();
-            CreateMap<Board, BoardDto>().ReverseMap();
+            CreateMap<Board, BoardDto>().ForMember("OrganizationName", opt => opt.MapFrom(c => c.Organization.Name)).ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<UserTask, TaskDto>().ReverseMap();
         }

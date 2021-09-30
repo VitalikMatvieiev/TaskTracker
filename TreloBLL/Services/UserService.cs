@@ -8,22 +8,28 @@ using Trelo1.Interfaces;
 
 using TreloDAL.UnitOfWork;
 using TreloDAL.Models;
+using TreloBLL.DtoModel;
+using AutoMapper;
 
 namespace Trelo1.Services
 {
     public class UserService : IUserService
     {
         private readonly UnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public UserService(UnitOfWork unitOfWork)
+
+        public UserService(UnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public void Create(User user)
+        public void Create(UserDto userDto)
         {
-            if(user != null)
+            if(userDto != null)
             {
+                var user = _mapper.Map<User>(userDto);
                 _unitOfWork.Users.Create(user);
                 _unitOfWork.SaveChanges();
             }
@@ -39,18 +45,20 @@ namespace Trelo1.Services
             }
         }
 
-        public IList<User> GetAllUsers()
+        public IList<UserDto> GetAllUsers()
         {
             List<User> users = _unitOfWork.Users.ToList();
-            return users;
+            List<UserDto> userDtos = _mapper.Map<List<UserDto>>(users);
+            return userDtos;
         }
 
-        public IList<User> GetUserInBoard(int boadrdId)
+        public IList<UserDto> GetUserInBoard(int boadrdId)
         {
             if(boadrdId != 0)
             {
                 var usersInBoard = _unitOfWork.Boards.FirstOrDefault(b=>b.Id == boadrdId, includeProperties: "Users").Users;
-                return usersInBoard;
+                List<UserDto> userDtos = _mapper.Map<List<UserDto>>(usersInBoard);
+                return userDtos;
             }
             else
             {
@@ -58,7 +66,7 @@ namespace Trelo1.Services
             }
         }
 
-        public IList<User> GetUserInOrganization(int organizationId)
+        public IList<UserDto> GetUserInOrganization(int organizationId)
         {
             if (organizationId != 0)
             {
@@ -68,7 +76,9 @@ namespace Trelo1.Services
                 {
                     users.AddRange(board.Users);
                 }
-                return users;
+
+                List<UserDto> userDtos = _mapper.Map<List<UserDto>>(users);
+                return userDtos;
             }
             else
             {

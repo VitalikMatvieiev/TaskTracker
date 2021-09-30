@@ -8,21 +8,26 @@ using Trelo1.Interfaces;
 
 using TreloDAL.UnitOfWork;
 using TreloDAL.Models;
+using AutoMapper;
+using TreloBLL.DtoModel;
 
 namespace Trelo1.Services
 {
     public class OrganizationService : IOrganizationService
     {
         private readonly UnitOfWork _unitOfWork;
-        public OrganizationService(UnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public OrganizationService(UnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public void CreateOrganization(Organization organization)
+        public void CreateOrganization(OrganiztionDto organizationDto)
         {
-            if(organization != null)
+            if(organizationDto != null)
             {
+                var organization = _mapper.Map<Organization>(organizationDto);
                 _unitOfWork.Organizations.Create(organization);
                 _unitOfWork.SaveChanges();
             }
