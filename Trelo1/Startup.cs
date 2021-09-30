@@ -13,7 +13,9 @@ using Trelo1.Data;
 using Trelo1.Interfaces;
 using Trelo1.Services;
 using System.Text.Json.Serialization;
-
+using TreloDAL.Repository.IRepository;
+using TreloDAL.Repository;
+using TreloDAL.UnitOfWork;
 
 namespace Trelo1
 {
@@ -37,6 +39,9 @@ namespace Trelo1
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IOrganizationService, OrganizationService>();
             services.AddScoped<IBoardService, BoardService>();
+
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
