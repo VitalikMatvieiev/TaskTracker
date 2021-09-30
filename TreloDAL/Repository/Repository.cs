@@ -88,5 +88,10 @@ namespace TreloDAL.Repository
         {
             dbSet.Update(item);
         }
+
+        public List<T> ToList()
+        {
+            return dbSet.ToList();
+        }
     }
 }

@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trelo1", "Trelo1\Trelo1.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreloDAL", "TreloDAL\TreloDAL.csproj", "{F7DBDE50-9025-466D-AA88-AD916B43EC1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreloBLL", "TreloBLL\TreloBLL.csproj", "{9C21ED12-0581-4D0C-B854-96446EF7E893}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F7DBDE50-9025-466D-AA88-AD916B43EC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7DBDE50-9025-466D-AA88-AD916B43EC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7DBDE50-9025-466D-AA88-AD916B43EC1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C21ED12-0581-4D0C-B854-96446EF7E893}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C21ED12-0581-4D0C-B854-96446EF7E893}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C21ED12-0581-4D0C-B854-96446EF7E893}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C21ED12-0581-4D0C-B854-96446EF7E893}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

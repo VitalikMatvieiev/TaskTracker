@@ -25,13 +25,13 @@ namespace Trelo1.Controllers
             return Ok();
         }
         [HttpDelete]
-        public IActionResult DeleteOrg(Organization organization)
+        public IActionResult DeleteOrg(int orgId)
         {
-            _organizationService.CreateOrganization(organization);
+            _organizationService.DeleteOrganization(orgId);
             return Ok();
         }
         [HttpPost]
-        public IActionResult AddBoardToOrg(int boardId, int orgId)
+        public IActionResult ChangeOganizationForBoard(int boardId, int orgId)
         {
             _organizationService.AddBoardToOrg(boardId, orgId);
             return Ok();

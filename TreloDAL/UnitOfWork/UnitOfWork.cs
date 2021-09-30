@@ -59,7 +59,7 @@ namespace TreloDAL.UnitOfWork
             }
         }
 
-        public void Save()
+        public void SaveChanges()
         {
             _db.SaveChanges();
         }

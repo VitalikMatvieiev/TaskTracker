@@ -6,28 +6,29 @@ using System.Threading.Tasks;
 using Trelo1.Data;
 using Trelo1.Interfaces;
 using Trelo1.Models;
+using TreloDAL.UnitOfWork;
 
 namespace Trelo1.Services
 {
     public class BoardService : IBoardService
     {
-        private readonly TreloDbContext _db;
-        public BoardService(TreloDbContext db)
+        private readonly UnitOfWork _unitOfWork;
+        public BoardService(UnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
         public void AddUserToBoard(int userId, int boardId)
         {
             if (userId != 0 && boardId != 0)
             {
-                var user = _db.Users.FirstOrDefault(u => u.Id == userId);
-                var board = _db.Boards.FirstOrDefault(b => b.Id == boardId);
+                var user = _unitOfWork.Users.FirstOrDefault(u => u.Id == userId);
+                var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId);
 
                 if (board != null)
                 {
                     board.Users.Add(user);
                 }
-                _db.SaveChanges();
+                _unitOfWork.SaveChanges();
             }
         }
 
@@ -35,8 +36,8 @@ namespace Trelo1.Services
         {
             if(board != null)
             {
-                _db.Boards.Add(board);
-                _db.SaveChanges();
+                _unitOfWork.Boards.Create(board);
+                _unitOfWork.SaveChanges();
             }
         }
 
@@ -44,9 +45,9 @@ namespace Trelo1.Services
         {
             if (boardId != 0)
             {
-                var board = _db.Boards.FirstOrDefault(b => b.Id == boardId);
-                _db.Boards.Remove(board);
-                _db.SaveChanges();
+                var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId);
+                _unitOfWork.Boards.Remove(board);
+                _unitOfWork.SaveChanges();
             }
         }
 
@@ -54,14 +55,14 @@ namespace Trelo1.Services
         {
             if (userId != 0 && boardId != 0)
             {
-                var user = _db.Users.FirstOrDefault(u => u.Id == userId);
-                var board = _db.Boards.Include(b=>b.Users).FirstOrDefault(b => b.Id == boardId);
+                var user = _unitOfWork.Users.FirstOrDefault(u => u.Id == userId);
+                var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId, includeProperties: "Users");
 
                 if (board != null)
                 {
                     board.Users.Remove(user);
                 }
-                _db.SaveChanges();
+                _unitOfWork.SaveChanges();
             }
         }
     }

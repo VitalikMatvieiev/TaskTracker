@@ -6,22 +6,25 @@ using System.Threading.Tasks;
 using Trelo1.Data;
 using Trelo1.Interfaces;
 using Trelo1.Models;
+using TreloDAL.UnitOfWork;
 
 namespace Trelo1.Services
 {
     public class UserService : IUserService
     {
-        private readonly TreloDbContext _db;
-        public UserService(TreloDbContext db)
+        private readonly UnitOfWork _unitOfWork;
+
+        public UserService(UnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
+
         public void Create(User user)
         {
             if(user != null)
             {
-                _db.Users.Add(user);
-                _db.SaveChanges();
+                _unitOfWork.Users.Create(user);
+                _unitOfWork.SaveChanges();
             }
         }
 
@@ -29,15 +32,15 @@ namespace Trelo1.Services
         {
             if(userId != 0)
             {
-                var user = _db.Users.FirstOrDefault(u => u.Id == userId);
-                _db.Users.Remove(user);
-                _db.SaveChanges();
+                var user = _unitOfWork.Users.FirstOrDefault(u => u.Id == userId);
+                _unitOfWork.Users.Remove(user);
+                _unitOfWork.SaveChanges();
             }
         }
 
         public IList<User> GetAllUsers()
         {
-            List<User> users = _db.Users.ToList();
+            List<User> users = _unitOfWork.Users.ToList();
             return users;
         }
 
@@ -45,7 +48,7 @@ namespace Trelo1.Services
         {
             if(boadrdId != 0)
             {
-                var usersInBoard = _db.Boards.Include(u => u.Users).FirstOrDefault(b=>b.Id == boadrdId).Users;
+                var usersInBoard = _unitOfWork.Boards.FirstOrDefault(b=>b.Id == boadrdId, includeProperties: "Users").Users;
                 return usersInBoard;
             }
             else
@@ -58,8 +61,8 @@ namespace Trelo1.Services
         {
             if (organizationId != 0)
             {
-                var boardInOrganization = _db.Organizations.Include(u => u.Boards).FirstOrDefault(o => o.Id == organizationId).Boards.Where(u => u.Users != null);
-                List<User> users = new List<User>();
+                var boardInOrganization = _unitOfWork.Organizations.FirstOrDefault(o => o.Id == organizationId, includeProperties: "Boards").Boards.Where(u => u.Users != null);
+                List <User> users = new List<User>();
                 foreach (var board in boardInOrganization)
                 {
                     users.AddRange(board.Users);

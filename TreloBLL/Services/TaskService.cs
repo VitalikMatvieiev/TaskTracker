@@ -6,30 +6,32 @@ using System.Threading.Tasks;
 using Trelo1.Data;
 using Trelo1.Interfaces;
 using Trelo1.Models;
+using TreloDAL.UnitOfWork;
 
 namespace Trelo1.Services
 {
     public class TaskService : ITaskService
     {
-        private readonly TreloDbContext _db;
-        public TaskService(TreloDbContext db)
+        private readonly UnitOfWork _unitOfWork;
+        public TaskService(UnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
+
         public void AssignUserToTask(int taskId, int userId)
         {
-            var task = _db.Tasks.Include(u=>u.AssignedUser).FirstOrDefault(u => u.Id == taskId);
-            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+            var task = _unitOfWork.UserTasks.FirstOrDefault(u => u.Id == taskId,includeProperties: "AssignedUser");
+            var user = _unitOfWork.Users.FirstOrDefault(u => u.Id == userId);
             task.AssignedUser = user;
-            _db.SaveChanges();
+            _unitOfWork.SaveChanges();
         }
 
         public void Create(UserTask userTask)
         {
             if(userTask != null)
             {
-                _db.Tasks.Add(userTask);
-                _db.SaveChanges();
+                _unitOfWork.UserTasks.Create(userTask);
+                _unitOfWork.SaveChanges();
             }
         }
 
@@ -37,9 +39,9 @@ namespace Trelo1.Services
         {
             if (id != 0)
             {
-                var task = _db.Tasks.FirstOrDefault(t => t.Id == id);
-                _db.Tasks.Remove(task);
-                _db.SaveChanges();
+                var task = _unitOfWork.UserTasks.FirstOrDefault(t => t.Id == id);
+                _unitOfWork.UserTasks.Remove(task);
+                _unitOfWork.SaveChanges();
             }
         }
 
@@ -47,7 +49,7 @@ namespace Trelo1.Services
         {
             if(boardId != 0)
             {
-                var boardTask = _db.Boards.Include(u=>u.UserTasks).FirstOrDefault(b => b.Id == boardId).UserTasks;
+                var boardTask = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId, includeProperties: "UserTasks").UserTasks;
                 return boardTask;
             } 
             else
@@ -60,7 +62,7 @@ namespace Trelo1.Services
         {
             if (organizationId != 0)
             {
-                var boardInOrganization = _db.Organizations.Include(u => u.Boards).FirstOrDefault(o => o.Id == organizationId).Boards.Where(u => u.UserTasks != null);
+                var boardInOrganization = _unitOfWork.Boards.GetAll(o => o.OrganizationId == organizationId, includeProperties: "UserTasks");
                 List<UserTask> tasks = new List<UserTask>();
                 foreach (var board in boardInOrganization)
                 {
@@ -78,7 +80,7 @@ namespace Trelo1.Services
         {
             if(taskId != 0)
             {
-                var task = _db.Tasks.FirstOrDefault(t => t.Id == taskId);
+                var task = _unitOfWork.UserTasks.FirstOrDefault(t => t.Id == taskId);
                 return task;
             }
             else
@@ -91,7 +93,7 @@ namespace Trelo1.Services
         {
             if (userId != 0)
             {
-                var taskList = _db.Users.Include(u=>u.UserTasks).FirstOrDefault(t => t.Id == userId).UserTasks;
+                var taskList = _unitOfWork.Users.FirstOrDefault(t => t.Id == userId, includeProperties: "UserTasks").UserTasks;
                 return taskList;
             }
             else

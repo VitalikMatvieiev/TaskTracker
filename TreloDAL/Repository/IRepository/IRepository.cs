@@ -24,5 +24,6 @@ namespace TreloDAL.Repository.IRepository
         void Update(T item);
         void DeleteById(int id);
         void Remove(T item);
+        List<T> ToList();
     }
 }

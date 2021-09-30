@@ -6,23 +6,24 @@ using System.Threading.Tasks;
 using Trelo1.Data;
 using Trelo1.Interfaces;
 using Trelo1.Models;
+using TreloDAL.UnitOfWork;
 
 namespace Trelo1.Services
 {
     public class OrganizationService : IOrganizationService
     {
-        private readonly TreloDbContext _db;
-        public OrganizationService(TreloDbContext db)
+        private readonly UnitOfWork _unitOfWork;
+        public OrganizationService(UnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public void CreateOrganization(Organization organization)
         {
             if(organization != null)
             {
-                _db.Organizations.Add(organization);
-                _db.SaveChanges();
+                _unitOfWork.Organizations.Create(organization);
+                _unitOfWork.SaveChanges();
             }
         }
 
@@ -30,11 +31,11 @@ namespace Trelo1.Services
         {
             if (organizationId != 0)
             {
-                var organization = _db.Organizations.FirstOrDefault(o => o.Id == organizationId);
+                var organization = _unitOfWork.Organizations.FirstOrDefault(o => o.Id == organizationId);
                 if(organization != null)
                 {
-                    _db.Organizations.Remove(organization);
-                    _db.SaveChanges();
+                    _unitOfWork.Organizations.Remove(organization);
+                    _unitOfWork.SaveChanges();
                 }
             }
         }
@@ -42,12 +43,12 @@ namespace Trelo1.Services
         {
             if(boardId != 0 && orgId != 0)
             {
-                var organization = _db.Organizations.Include(o=>o.Boards).FirstOrDefault(o => o.Id == orgId);
-                var board = _db.Boards.FirstOrDefault(b => b.Id == boardId);
+                var organization = _unitOfWork.Organizations.FirstOrDefault(o => o.Id == orgId, includeProperties: "Boards");
+                var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId);
                 if (organization != null && board != null)
                 {
                     organization.Boards.Add(board);
-                    _db.SaveChanges();
+                    _unitOfWork.SaveChanges();
                 }
             }
         }

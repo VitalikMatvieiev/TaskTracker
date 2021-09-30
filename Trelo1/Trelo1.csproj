@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TreloBLL\TreloBLL.csproj" />
     <ProjectReference Include="..\TreloDAL\TreloDAL.csproj" />
   </ItemGroup>
 

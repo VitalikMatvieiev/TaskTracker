@@ -7,6 +7,6 @@ namespace TreloDAL.UnitOfWork
 {
     public interface IUnitOfWork
     {
-        public void Save();
+        public void SaveChanges();
     }
 }
