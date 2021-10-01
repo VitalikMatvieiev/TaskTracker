@@ -20,12 +20,13 @@ namespace TreloDAL.Data
             modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new OrganizationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new BoardEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleEntityTypeConfiguration());
         }
 
         public DbSet<UserTask> Tasks { get; set; }
         public DbSet<Board> Boards { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Organization> Organizations  { get; set; }
-        public DbSet<TestModelv> TestModelvs { get; set; }
+        public DbSet<Role> Roles { get; set; }
     }
 }

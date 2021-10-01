@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TreloDAL.Data;
 
 namespace Trelo1.Migrations
 {
     [DbContext(typeof(TreloDbContext))]
-    partial class TreloDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211001144344_AddRoleTableToDatabase")]
+    partial class AddRoleTableToDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,21 +34,6 @@ namespace Trelo1.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("BoardUser");
-                });
-
-            modelBuilder.Entity("RoleUser", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RoleId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("RoleUser");
                 });
 
             modelBuilder.Entity("TreloDAL.Models.Board", b =>
@@ -118,7 +105,12 @@ namespace Trelo1.Migrations
                         .HasMaxLength(17)
                         .HasColumnType("nvarchar(17)");
 
+                    b.Property<int?>("RoleId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -179,21 +171,6 @@ namespace Trelo1.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RoleUser", b =>
-                {
-                    b.HasOne("TreloDAL.Models.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TreloDAL.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TreloDAL.Models.Board", b =>
                 {
                     b.HasOne("TreloDAL.Models.Organization", "Organization")
@@ -203,6 +180,15 @@ namespace Trelo1.Migrations
                         .IsRequired();
 
                     b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("TreloDAL.Models.User", b =>
+                {
+                    b.HasOne("TreloDAL.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("TreloDAL.Models.UserTask", b =>
@@ -230,6 +216,11 @@ namespace Trelo1.Migrations
             modelBuilder.Entity("TreloDAL.Models.Organization", b =>
                 {
                     b.Navigation("Boards");
+                });
+
+            modelBuilder.Entity("TreloDAL.Models.Role", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TreloDAL.Models.User", b =>

@@ -18,6 +18,8 @@ namespace TreloDAL.Models
         
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        public List<Role> Role { get; set; }
         
         public IList<Board> Boards { get; set; }
         public IList<UserTask> UserTasks { get; set; }
