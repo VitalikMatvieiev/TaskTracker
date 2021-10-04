@@ -74,6 +74,7 @@ namespace Trelo1
                     };
 
                 });
+            
             /*services.AddAuthorization(options =>
             {
                 options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)

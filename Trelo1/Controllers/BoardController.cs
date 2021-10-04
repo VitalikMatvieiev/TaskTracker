@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Trelo1.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class BoardController : ControllerBase
     {
         private readonly IBoardService _boardService;
@@ -20,12 +22,14 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IEnumerable<BoardDto> GetAllBoards()
         {
             return _boardService.GetBoards();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateBoard(BoardDto board)
         {
             if (board != null)
@@ -41,6 +45,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult AddUserToBoard(int userId, int boardId)
         {
             _boardService.AddUserToBoard(userId, boardId);
@@ -48,12 +53,14 @@ namespace Trelo1.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteBoard(int boardId)
         {
             _boardService.DeleteBoard(boardId);
             return Ok();
         }
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteUserFromBoard(int userId, int boardId)
         {
             _boardService.DeleteUserFromBoard(userId, boardId);

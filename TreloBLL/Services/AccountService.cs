@@ -38,7 +38,7 @@ namespace TreloBLL.Services
                 return claimsIdentity;
             }
 
-            // если пользователя не найдено
+
             return null;
         }
     }
