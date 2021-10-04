@@ -32,8 +32,14 @@ namespace Trelo1.Controllers
         [HttpDelete]
         public IActionResult DeleteTask(int taskId)
         {
-            _taskService.Delete(taskId);
-            return Ok();
+            bool hasDeleted = _taskService.Delete(taskId);
+            if(hasDeleted)
+            {
+                return Ok();
+            }
+
+            return NoContent();
+            
         }
         
         [HttpGet]

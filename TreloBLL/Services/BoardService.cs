@@ -49,17 +49,23 @@ namespace Trelo1.Services
             }
         }
 
-        public void DeleteBoard(int boardId)
+        public bool DeleteBoard(int boardId)
         {
             if (boardId != 0)
             {
                 var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId);
-                _unitOfWork.Boards.Remove(board);
-                _unitOfWork.SaveChanges();
+                if(board != null)
+                {
+                    _unitOfWork.Boards.Remove(board);
+                    _unitOfWork.SaveChanges();
+                    return true;
+                }  
             }
+
+            return false;
         }
 
-        public void DeleteUserFromBoard(int userId, int boardId)
+        public bool DeleteUserFromBoard(int userId, int boardId)
         {
             if (userId != 0 && boardId != 0)
             {
@@ -69,9 +75,12 @@ namespace Trelo1.Services
                 if (board != null)
                 {
                     board.Users.Remove(user);
+                    _unitOfWork.SaveChanges();
+                    return true;
                 }
-                _unitOfWork.SaveChanges();
             }
+
+            return false;
         }
 
         public List<BoardDto> GetBoards()

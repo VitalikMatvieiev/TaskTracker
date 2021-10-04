@@ -33,7 +33,7 @@ namespace Trelo1.Services
             }
         }
 
-        public void DeleteOrganization(int organizationId)
+        public bool DeleteOrganization(int organizationId)
         {
             if (organizationId != 0)
             {
@@ -42,8 +42,10 @@ namespace Trelo1.Services
                 {
                     _unitOfWork.Organizations.Remove(organization);
                     _unitOfWork.SaveChanges();
+                    return true;
                 }
             }
+            return false;
         }
         public void AddBoardToOrg(int boardId, int orgId)
         {

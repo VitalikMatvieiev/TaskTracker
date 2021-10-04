@@ -56,15 +56,25 @@ namespace Trelo1.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteBoard(int boardId)
         {
-            _boardService.DeleteBoard(boardId);
-            return Ok();
+            bool hasDeleted = _boardService.DeleteBoard(boardId);
+            if (hasDeleted)
+            {
+                return Ok();
+            }
+            return NoContent();
         }
         [HttpDelete]
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUserFromBoard(int userId, int boardId)
         {
-            _boardService.DeleteUserFromBoard(userId, boardId);
-            return Ok();
+            bool hasDeleted = _boardService.DeleteUserFromBoard(userId, boardId);
+            if (hasDeleted)
+            {
+                return Ok();
+            }
+
+            return NoContent();
+            
         }
     }
 }
