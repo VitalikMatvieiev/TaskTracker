@@ -45,11 +45,13 @@ namespace Trelo1
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IOrganizationService, OrganizationService>();
             services.AddScoped<IBoardService, BoardService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IReportService, ReportService>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<UnitOfWork>();
 
-            services.AddScoped<IAccountService, AccountService>();
+            
 
             var mapperConfiguration = new MapperConfiguration(mapperConfiguration =>
             {
