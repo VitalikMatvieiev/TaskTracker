@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -23,6 +24,7 @@ namespace Trelo1.Controllers
             _accountService = accountService;
         }
         [HttpPost()]
+        [AllowAnonymous]
         public IActionResult Token(string username, string password)
         {
             var identity = _accountService.GetIdentity(username, password);

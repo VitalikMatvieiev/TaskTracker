@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Trelo1.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -41,8 +43,13 @@ namespace Trelo1.Controllers
         [HttpDelete]
         public IActionResult DeleteUser(int id)
         {
-            _userService.DeleteUser(id);
-            return Ok();
+            bool hasDeleted = _userService.DeleteUser(id);
+            if(hasDeleted)
+            {
+                return Ok();
+            }
+            return NoContent();
+           
         }
 
     }

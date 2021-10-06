@@ -42,14 +42,20 @@ namespace Trelo1.Services
             }
         }
 
-        public void Delete(int id)
+        public bool Delete(int id)
         {
             if (id != 0)
             {
                 var task = _unitOfWork.UserTasks.FirstOrDefault(t => t.Id == id);
-                _unitOfWork.UserTasks.Remove(task);
-                _unitOfWork.SaveChanges();
+                if(task != null)
+                {
+                    _unitOfWork.UserTasks.Remove(task);
+                    _unitOfWork.SaveChanges();
+                    return true;
+                }
             }
+
+            return false;
         }
 
         public IEnumerable<TaskDto> GetBoardTasks(int boardId)

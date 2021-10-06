@@ -35,14 +35,20 @@ namespace Trelo1.Services
             }
         }
 
-        public void DeleteUser(int userId)
+        public bool DeleteUser(int userId)
         {
             if(userId != 0)
             {
                 var user = _unitOfWork.Users.FirstOrDefault(u => u.Id == userId);
-                _unitOfWork.Users.Remove(user);
-                _unitOfWork.SaveChanges();
+                if (user != null)
+                {
+                    _unitOfWork.Users.Remove(user);
+                    _unitOfWork.SaveChanges();
+                    return true;
+                }
             }
+
+            return false;
         }
 
         public IList<UserDto> GetAllUsers()

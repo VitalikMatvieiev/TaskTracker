@@ -14,6 +14,7 @@ namespace TreloBLL.DtoModel
         public DateTime CreatedDate { get; set; }
         public Status Status { get; set; }
         public Priority Priority { get; set; }
+        public int BoardId { get; set; }
         public int? AssignedUserId { get; set; }
     }
 }

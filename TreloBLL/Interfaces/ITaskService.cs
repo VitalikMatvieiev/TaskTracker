@@ -10,7 +10,7 @@ namespace Trelo1.Interfaces
     public interface ITaskService
     {
         void Create(TaskDto userTask);
-        void Delete(int id);
+        bool Delete(int id);
         void AssignUserToTask(int taskId, int userId);
         TaskDto GetTask(int taskId);
         IEnumerable<TaskDto> GetUserTasks(int userId);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Trelo1.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class TaskController : ControllerBase
     {
         private readonly ITaskService _taskService;
@@ -30,8 +32,14 @@ namespace Trelo1.Controllers
         [HttpDelete]
         public IActionResult DeleteTask(int taskId)
         {
-            _taskService.Delete(taskId);
-            return Ok();
+            bool hasDeleted = _taskService.Delete(taskId);
+            if(hasDeleted)
+            {
+                return Ok();
+            }
+
+            return NoContent();
+            
         }
         
         [HttpGet]
@@ -42,6 +50,7 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IEnumerable<TaskDto> GetOrganizationTasks(int organizationId)
         {
             IEnumerable<TaskDto> tasks = _taskService.GetOrganizationTasks(organizationId);
@@ -57,6 +66,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IList<TaskDto> GetUserTasks(int userId)
         {
             var tasks = _taskService.GetUserTasks(userId)?.ToList();

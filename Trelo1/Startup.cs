@@ -45,18 +45,13 @@ namespace Trelo1
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IOrganizationService, OrganizationService>();
             services.AddScoped<IBoardService, BoardService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IReportService, ReportService>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<UnitOfWork>();
 
-            services.AddScoped<IAccountService, AccountService>();
-
-            var mapperConfiguration = new MapperConfiguration(mapperConfiguration =>
-            {
-                mapperConfiguration.AddProfile(new MappingProfile());
-            });
-            IMapper mapper = mapperConfiguration.CreateMapper();
-            services.AddSingleton(mapper);
+            services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -74,12 +69,6 @@ namespace Trelo1
                     };
 
                 });
-            /*services.AddAuthorization(options =>
-            {
-                options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-                .RequireAuthenticatedUser()
-                .Build();
-            });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

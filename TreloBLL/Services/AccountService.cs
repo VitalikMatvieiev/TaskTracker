@@ -20,21 +20,25 @@ namespace TreloBLL.Services
         }
         public ClaimsIdentity GetIdentity(string email, string password)
         {
-            User person = _unitOfWork.Users.FirstOrDefault(x => x.Email == email && x.Password == password);
+            User person = _unitOfWork.Users.FirstOrDefault(x => x.Email == email && x.Password == password, includeProperties: "Role");
             if (person != null)
             {
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, person.Email),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, "User")
                 };
+                foreach (var role in person.Role)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role.RoleName));
+                }
+
                 ClaimsIdentity claimsIdentity =
                 new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
                     ClaimsIdentity.DefaultRoleClaimType);
                 return claimsIdentity;
             }
 
-            // если пользователя не найдено
+
             return null;
         }
     }
