@@ -23,5 +23,6 @@ namespace TreloDAL.Models
         
         public IList<Board> Boards { get; set; }
         public IList<UserTask> UserTasks { get; set; }
+        public IList<RefreshToken> RefreshTokens { get; set; }
     }
 }

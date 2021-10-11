@@ -66,6 +66,7 @@ namespace Trelo1
                         ValidateLifetime = true,
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true,
+                        RequireExpirationTime = true,
                     };
 
                 });
