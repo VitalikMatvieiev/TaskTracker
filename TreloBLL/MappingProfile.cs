@@ -15,6 +15,7 @@ namespace TreloBLL
             CreateMap<Board, BoardDto>().ForMember("OrganizationName", opt => opt.MapFrom(c => c.Organization.Name)).ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<UserTask, TaskDto>().ReverseMap();
+            CreateMap<RefreshToken, RefreshTokenDto>().ReverseMap();
         }
     }
 }
