@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -9,24 +10,24 @@ using System.Security.Cryptography;
 using System.Text;
 using TreloBLL.DtoModel;
 using TreloBLL.Interfaces;
+using TreloDAL.Data;
 using TreloDAL.Models;
-using TreloDAL.UnitOfWork;
 
 namespace TreloBLL.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
-        public AccountService(UnitOfWork unitOfWork, IMapper mapper)
+        public AccountService(TreloDbContext dbContext, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model, string ip)
         {
-            User user = _unitOfWork.Users.FirstOrDefault(x => x.Email == model.Username && x.Password == model.Password, includeProperties: "Role,RefreshTokens");
+            User user = _dbContext.Users.Include(p=>p.Role).Include(p=>p.RefreshTokens).FirstOrDefault(x => x.Email == model.Username && x.Password == model.Password);
             
             if(user == null)
             {
@@ -38,14 +39,14 @@ namespace TreloBLL.Services
 
             var refreshToken = _mapper.Map<RefreshToken>(refreshTokenDto);
             user.RefreshTokens.Add(refreshToken);
-            _unitOfWork.SaveChanges();
+            _dbContext.SaveChanges();
 
             return new AuthenticateResponse(user, jwtToken, refreshToken.Token);
         }
 
         public AuthenticateResponse RefreshToken(string token, string ipAddress)
         {
-            var user = _unitOfWork.Users.FirstOrDefault(u => u.RefreshTokens.Any(t => t.Token == token), includeProperties: "Role,RefreshTokens");
+            var user = _dbContext.Users.Include(p => p.Role).Include(p => p.RefreshTokens).FirstOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (user == null)
             {
@@ -64,7 +65,7 @@ namespace TreloBLL.Services
 
             user.RefreshTokens.Add(newRefreshToken);
 
-            _unitOfWork.SaveChanges();
+            _dbContext.SaveChanges();
 
             var jwtToken = GenerateJWTToken(user);
 
@@ -73,7 +74,7 @@ namespace TreloBLL.Services
 
         public bool RevokeToken(string token, string ipAddress)
         {
-            var user = _unitOfWork.Users.FirstOrDefault(u => u.RefreshTokens.Any(t => t.Token == token), includeProperties: "RefreshTokens");
+            var user = _dbContext.Users.Include(p => p.RefreshTokens).FirstOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (user == null)
             {
@@ -90,7 +91,7 @@ namespace TreloBLL.Services
 
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
-            _unitOfWork.SaveChanges();
+            _dbContext.SaveChanges();
 
             return true;
         }

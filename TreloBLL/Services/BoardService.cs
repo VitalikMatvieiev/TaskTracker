@@ -2,25 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using TreloDAL.Data;
 using Trelo1.Interfaces;
-
-using TreloDAL.UnitOfWork;
 using TreloDAL.Models;
 using TreloBLL.DtoModel;
 using AutoMapper;
+using TreloDAL.Data;
 
 namespace Trelo1.Services
 {
     public class BoardService : IBoardService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public BoardService(UnitOfWork unitOfWork, IMapper mapper)
+        public BoardService(TreloDbContext dbContext, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
 
@@ -28,14 +25,14 @@ namespace Trelo1.Services
         {
             if (userId != 0 && boardId != 0)
             {
-                var user = _unitOfWork.Users.FirstOrDefault(u => u.Id == userId);
-                var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId);
+                var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+                var board = _dbContext.Boards.FirstOrDefault(b => b.Id == boardId);
 
                 if (board != null)
                 {
                     board.Users.Add(user);
                 }
-                _unitOfWork.SaveChanges();
+                _dbContext.SaveChanges();
             }
         }
 
@@ -44,8 +41,8 @@ namespace Trelo1.Services
             if(boardDto != null)
             {
                 var board = _mapper.Map<Board>(boardDto);
-                _unitOfWork.Boards.Create(board);
-                _unitOfWork.SaveChanges();
+                _dbContext.Boards.Add(board);
+                _dbContext.SaveChanges();
             }
         }
 
@@ -53,11 +50,11 @@ namespace Trelo1.Services
         {
             if (boardId != 0)
             {
-                var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId);
+                var board = _dbContext.Boards.FirstOrDefault(b => b.Id == boardId);
                 if(board != null)
                 {
-                    _unitOfWork.Boards.Remove(board);
-                    _unitOfWork.SaveChanges();
+                    _dbContext.Boards.Remove(board);
+                    _dbContext.SaveChanges();
                     return true;
                 }  
             }
@@ -69,13 +66,13 @@ namespace Trelo1.Services
         {
             if (userId != 0 && boardId != 0)
             {
-                var user = _unitOfWork.Users.FirstOrDefault(u => u.Id == userId);
-                var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId, includeProperties: "Users");
+                var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+                var board = _dbContext.Boards.Include(p=>p.Users).FirstOrDefault(b => b.Id == boardId);
 
                 if (board != null)
                 {
                     board.Users.Remove(user);
-                    _unitOfWork.SaveChanges();
+                    _dbContext.SaveChanges();
                     return true;
                 }
             }
@@ -85,7 +82,7 @@ namespace Trelo1.Services
 
         public List<BoardDto> GetBoards()
         {
-            var boards = _unitOfWork.Boards.GetAll(includeProperties: "UserTasks,Organization");
+            var boards = _dbContext.Boards.Include(p => p.UserTasks).Include(p => p.Organization);
             var boardDto = _mapper.Map<List<BoardDto>>(boards);
             return boardDto;
         }

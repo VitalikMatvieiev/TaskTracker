@@ -2,34 +2,31 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using TreloDAL.Data;
 using Trelo1.Interfaces;
-
-using TreloDAL.UnitOfWork;
 using TreloDAL.Models;
 using AutoMapper;
 using TreloBLL.DtoModel;
+using TreloDAL.Data;
 
 namespace Trelo1.Services
 {
     public class TaskService : ITaskService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public TaskService(UnitOfWork unitOfWork, IMapper mapper)
+        public TaskService(TreloDbContext dbContext, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
 
         public void AssignUserToTask(int taskId, int userId)
         {
-            var task = _unitOfWork.UserTasks.FirstOrDefault(u => u.Id == taskId,includeProperties: "AssignedUser");
-            var user = _unitOfWork.Users.FirstOrDefault(u => u.Id == userId);
+            var task = _dbContext.Tasks.Include(p=>p.AssignedUser).FirstOrDefault(u => u.Id == taskId);
+            var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
             task.AssignedUser = user;
-            _unitOfWork.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
         public void Create(TaskDto userTaskDto)
@@ -37,8 +34,8 @@ namespace Trelo1.Services
             if(userTaskDto != null)
             {
                 var userTask = _mapper.Map<UserTask>(userTaskDto);
-                _unitOfWork.UserTasks.Create(userTask);
-                _unitOfWork.SaveChanges();
+                _dbContext.Tasks.Add(userTask);
+                _dbContext.SaveChanges();
             }
         }
 
@@ -46,11 +43,11 @@ namespace Trelo1.Services
         {
             if (id != 0)
             {
-                var task = _unitOfWork.UserTasks.FirstOrDefault(t => t.Id == id);
+                var task = _dbContext.Tasks.FirstOrDefault(t => t.Id == id);
                 if(task != null)
                 {
-                    _unitOfWork.UserTasks.Remove(task);
-                    _unitOfWork.SaveChanges();
+                    _dbContext.Tasks.Remove(task);
+                    _dbContext.SaveChanges();
                     return true;
                 }
             }
@@ -62,7 +59,7 @@ namespace Trelo1.Services
         {
             if(boardId != 0)
             {
-                var boardTask = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId, includeProperties: "UserTasks").UserTasks;
+                var boardTask = _dbContext.Boards.Include(p=>p.UserTasks).FirstOrDefault(b => b.Id == boardId).UserTasks;
                 var boardTaskDto = _mapper.Map<List<TaskDto>>(boardTask);
                 return boardTaskDto;
             } 
@@ -76,7 +73,7 @@ namespace Trelo1.Services
         {
             if (organizationId != 0)
             {
-                var boardInOrganization = _unitOfWork.Boards.GetAll(o => o.OrganizationId == organizationId, includeProperties: "UserTasks");
+                var boardInOrganization = _dbContext.Boards.Include(p=>p.UserTasks).Where(o => o.OrganizationId == organizationId);
                 
                 List<UserTask> tasks = new List<UserTask>();
                 foreach (var board in boardInOrganization)
@@ -97,7 +94,7 @@ namespace Trelo1.Services
         {
             if(taskId != 0)
             {
-                var task = _unitOfWork.UserTasks.FirstOrDefault(t => t.Id == taskId);
+                var task = _dbContext.Tasks.FirstOrDefault(t => t.Id == taskId);
                 var taskDto = _mapper.Map<TaskDto>(task);
                 return taskDto;
             }
@@ -111,7 +108,7 @@ namespace Trelo1.Services
         {
             if (userId != 0)
             {
-                var taskList = _unitOfWork.Users.FirstOrDefault(t => t.Id == userId, includeProperties: "UserTasks").UserTasks;
+                var taskList = _dbContext.Users.Include(p=>p.UserTasks).FirstOrDefault(t => t.Id == userId).UserTasks;
                 var tasksDto = _mapper.Map<List<TaskDto>>(taskList);
                 return tasksDto;
             }
