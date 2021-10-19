@@ -41,7 +41,6 @@ namespace Trelo1.Controllers
             return Ok(tokens);
         }
 
-        [AllowAnonymous]
         [HttpPost()]
         public IActionResult RefreshToken()
         {
@@ -57,7 +56,6 @@ namespace Trelo1.Controllers
 
         }
 
-        [AllowAnonymous]
         [HttpPost()]
         public IActionResult RevokeToken(string tokenForRevoke)
         {
