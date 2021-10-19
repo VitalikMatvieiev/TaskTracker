@@ -32,7 +32,7 @@ namespace Trelo1.Services
                 {
                     board.Users.Add(user);
                 }
-                _dbContext.SaveChanges();
+                _dbContext.SaveChangesAsync();
             }
         }
 
@@ -42,7 +42,7 @@ namespace Trelo1.Services
             {
                 var board = _mapper.Map<Board>(boardDto);
                 _dbContext.Boards.Add(board);
-                _dbContext.SaveChanges();
+                _dbContext.SaveChangesAsync();
             }
         }
 
@@ -54,7 +54,7 @@ namespace Trelo1.Services
                 if(board != null)
                 {
                     _dbContext.Boards.Remove(board);
-                    _dbContext.SaveChanges();
+                    _dbContext.SaveChangesAsync();
                     return true;
                 }  
             }
@@ -72,7 +72,7 @@ namespace Trelo1.Services
                 if (board != null)
                 {
                     board.Users.Remove(user);
-                    _dbContext.SaveChanges();
+                    _dbContext.SaveChangesAsync();
                     return true;
                 }
             }

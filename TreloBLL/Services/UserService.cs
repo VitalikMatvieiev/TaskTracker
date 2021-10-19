@@ -27,8 +27,8 @@ namespace Trelo1.Services
             if(userDto != null)
             {
                 var user = _mapper.Map<User>(userDto);
-                _dbContext.Users.Add(user);
-                _dbContext.SaveChanges();
+                _dbContext.Users.AddAsync(user);
+                _dbContext.SaveChangesAsync();
             }
         }
 
@@ -36,11 +36,11 @@ namespace Trelo1.Services
         {
             if(userId != 0)
             {
-                var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+                var user = _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId).Result;
                 if (user != null)
                 {
                     _dbContext.Users.Remove(user);
-                    _dbContext.SaveChanges();
+                    _dbContext.SaveChangesAsync();
                     return true;
                 }
             }
@@ -59,7 +59,7 @@ namespace Trelo1.Services
         {
             if(boadrdId != 0)
             {
-                var usersInBoard = _dbContext.Boards.Include(p=>p.Users).FirstOrDefault(b=>b.Id == boadrdId).Users;
+                var usersInBoard = _dbContext.Boards.Include(p=>p.Users).FirstOrDefaultAsync(b=>b.Id == boadrdId).Result.Users;
                 List<UserDto> userDtos = _mapper.Map<List<UserDto>>(usersInBoard);
                 return userDtos;
             }
@@ -73,7 +73,7 @@ namespace Trelo1.Services
         {
             if (organizationId != 0)
             {
-                var boardInOrganization = _dbContext.Organizations.Include(p=>p.Boards).FirstOrDefault(o => o.Id == organizationId).Boards.Where(u => u.Users != null);
+                var boardInOrganization = _dbContext.Organizations.Include(p=>p.Boards).FirstOrDefaultAsync(o => o.Id == organizationId).Result.Boards.Where(u => u.Users != null);
                 List <User> users = new List<User>();
                 foreach (var board in boardInOrganization)
                 {

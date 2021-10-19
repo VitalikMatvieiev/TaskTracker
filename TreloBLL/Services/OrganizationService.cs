@@ -25,7 +25,7 @@ namespace Trelo1.Services
             {
                 var organization = _mapper.Map<Organization>(organizationDto);
                 _dbContext.Organizations.Add(organization);
-                _dbContext.SaveChanges();
+                _dbContext.SaveChangesAsync();
             }
         }
 
@@ -37,7 +37,7 @@ namespace Trelo1.Services
                 if(organization != null)
                 {
                     _dbContext.Organizations.Remove(organization);
-                    _dbContext.SaveChanges();
+                    _dbContext.SaveChangesAsync();
                     return true;
                 }
             }
@@ -52,7 +52,7 @@ namespace Trelo1.Services
                 if (organization != null && board != null)
                 {
                     organization.Boards.Add(board);
-                    _dbContext.SaveChanges();
+                    _dbContext.SaveChangesAsync();
                 }
             }
         }

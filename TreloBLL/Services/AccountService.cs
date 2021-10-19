@@ -39,7 +39,7 @@ namespace TreloBLL.Services
 
             var refreshToken = _mapper.Map<RefreshToken>(refreshTokenDto);
             user.RefreshTokens.Add(refreshToken);
-            _dbContext.SaveChanges();
+            _dbContext.SaveChangesAsync();
 
             return new AuthenticateResponse(user, jwtToken, refreshToken.Token);
         }
@@ -65,7 +65,7 @@ namespace TreloBLL.Services
 
             user.RefreshTokens.Add(newRefreshToken);
 
-            _dbContext.SaveChanges();
+            _dbContext.SaveChangesAsync();
 
             var jwtToken = GenerateJWTToken(user);
 
@@ -91,7 +91,7 @@ namespace TreloBLL.Services
 
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
-            _dbContext.SaveChanges();
+            _dbContext.SaveChangesAsync();
 
             return true;
         }
