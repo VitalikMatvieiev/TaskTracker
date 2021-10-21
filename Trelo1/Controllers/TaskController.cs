@@ -30,9 +30,9 @@ namespace Trelo1.Controllers
         }
         
         [HttpDelete]
-        public IActionResult DeleteTask(int taskId)
+        public async Task<IActionResult> DeleteTask(int taskId)
         {
-            bool hasDeleted = _taskService.Delete(taskId);
+            bool hasDeleted = await _taskService.Delete(taskId);
             if(hasDeleted)
             {
                 return Ok();
@@ -43,9 +43,9 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        public IEnumerable<TaskDto> GetBoardTasks(int boardId)
+        public async Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId)
         {
-            IEnumerable<TaskDto> tasks = _taskService.GetBoardTasks(boardId);
+            IEnumerable<TaskDto> tasks = await _taskService.GetBoardTasks(boardId);
             return tasks;
         }
         
@@ -58,25 +58,25 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        public TaskDto GetTask(int taskId)
+        public async Task<TaskDto> GetTask(int taskId)
         {
-            var task = _taskService.GetTask(taskId);
+            var task = await _taskService.GetTask(taskId);
 
             return task;
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public IList<TaskDto> GetUserTasks(int userId)
+        public async Task<IList<TaskDto>> GetUserTasks(int userId)
         {
-            var tasks = _taskService.GetUserTasks(userId)?.ToList();
+            var tasks = await _taskService.GetUserTasks(userId);
 
-            return tasks;
+            return tasks?.ToList();
         }
         [HttpPut]
-        public IActionResult AssignUserToTask(int taskId, int userId)
+        public async Task<IActionResult> AssignUserToTask(int taskId, int userId)
         {
-            _taskService.AssignUserToTask(taskId, userId);
+            await _taskService.AssignUserToTask(taskId, userId);
             return Ok();
         }
 

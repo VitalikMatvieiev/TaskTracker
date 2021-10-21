@@ -7,6 +7,7 @@ using TreloDAL.Models;
 using AutoMapper;
 using TreloBLL.DtoModel;
 using TreloDAL.Data;
+using System.Threading.Tasks;
 
 namespace Trelo1.Services
 {
@@ -21,33 +22,33 @@ namespace Trelo1.Services
             _mapper = mapper;
         }
 
-        public void AssignUserToTask(int taskId, int userId)
+        public async Task AssignUserToTask(int taskId, int userId)
         {
-            var task = _dbContext.Tasks.Include(p=>p.AssignedUser).FirstOrDefault(u => u.Id == taskId);
-            var user = _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId).Result;
+            var task = await _dbContext.Tasks.Include(p=>p.AssignedUser).FirstOrDefaultAsync(u => u.Id == taskId);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             task.AssignedUser = user;
-            _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void Create(TaskDto userTaskDto)
+        public async Task Create(TaskDto userTaskDto)
         {
             if(userTaskDto != null)
             {
                 var userTask = _mapper.Map<UserTask>(userTaskDto);
                 _dbContext.Tasks.Add(userTask);
-                _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             if (id != 0)
             {
-                var task = _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == id).Result;
+                var task = await _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == id);
                 if(task != null)
                 {
                     _dbContext.Tasks.Remove(task);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     return true;
                 }
             }
@@ -55,12 +56,13 @@ namespace Trelo1.Services
             return false;
         }
 
-        public IEnumerable<TaskDto> GetBoardTasks(int boardId)
+        public async Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId)
         {
             if(boardId != 0)
             {
-                var boardTask = _dbContext.Boards.Include(p=>p.UserTasks).FirstOrDefaultAsync(b => b.Id == boardId).Result.UserTasks;
-                var boardTaskDto = _mapper.Map<List<TaskDto>>(boardTask);
+                var board = await _dbContext.Boards.Include(p => p.UserTasks).FirstOrDefaultAsync(b => b.Id == boardId);
+                var taks = board.UserTasks;
+                var boardTaskDto = _mapper.Map<List<TaskDto>>(taks);
                 return boardTaskDto;
             } 
             else
@@ -90,11 +92,11 @@ namespace Trelo1.Services
             }
         }
 
-        public TaskDto GetTask(int taskId)
+        public async Task<TaskDto> GetTask(int taskId)
         {
             if(taskId != 0)
             {
-                var task = _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == taskId).Result;
+                var task = await _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
                 var taskDto = _mapper.Map<TaskDto>(task);
                 return taskDto;
             }
@@ -104,12 +106,13 @@ namespace Trelo1.Services
             }
         }
 
-        public IEnumerable<TaskDto> GetUserTasks(int userId)
+        public async Task<IEnumerable<TaskDto>> GetUserTasks(int userId)
         {
             if (userId != 0)
             {
-                var taskList = _dbContext.Users.Include(p => p.UserTasks).FirstOrDefaultAsync(t => t.Id == userId).Result.UserTasks;
-                var tasksDto = _mapper.Map<List<TaskDto>>(taskList);
+                var user = await _dbContext.Users.Include(p => p.UserTasks).FirstOrDefaultAsync(t => t.Id == userId);
+                var task = user.UserTasks;
+                var tasksDto = _mapper.Map<List<TaskDto>>(task);
                 return tasksDto;
             }
             else
