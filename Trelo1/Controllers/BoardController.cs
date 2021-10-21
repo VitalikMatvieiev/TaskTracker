@@ -30,11 +30,11 @@ namespace Trelo1.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult CreateBoard(BoardDto board)
+        public async Task<IActionResult> CreateBoard(BoardDto board)
         {
             if (board != null)
             {
-                _boardService.CreateBoard(board);
+                await _boardService.CreateBoard(board);
                 return Ok();
             }
             else
@@ -46,17 +46,17 @@ namespace Trelo1.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult AddUserToBoard(int userId, int boardId)
+        public async Task<IActionResult> AddUserToBoard(int userId, int boardId)
         {
-            _boardService.AddUserToBoard(userId, boardId);
+            await _boardService.AddUserToBoard(userId, boardId);
             return Ok();
         }
 
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteBoard(int boardId)
+        public async Task<IActionResult> DeleteBoard(int boardId)
         {
-            bool hasDeleted = _boardService.DeleteBoard(boardId);
+            bool hasDeleted = await _boardService.DeleteBoard(boardId);
             if (hasDeleted)
             {
                 return Ok();
@@ -65,9 +65,9 @@ namespace Trelo1.Controllers
         }
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteUserFromBoard(int userId, int boardId)
+        public async Task<IActionResult> DeleteUserFromBoard(int userId, int boardId)
         {
-            bool hasDeleted = _boardService.DeleteUserFromBoard(userId, boardId);
+            bool hasDeleted = await _boardService.DeleteUserFromBoard(userId, boardId);
             if (hasDeleted)
             {
                 return Ok();

@@ -41,9 +41,9 @@ namespace Trelo1.Controllers
             return Ok();
         }
         [HttpDelete]
-        public IActionResult DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            bool hasDeleted = _userService.DeleteUser(id);
+            bool hasDeleted = await _userService.DeleteUser(id);
             if(hasDeleted)
             {
                 return Ok();

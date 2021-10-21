@@ -7,6 +7,7 @@ using TreloDAL.Models;
 using TreloBLL.DtoModel;
 using AutoMapper;
 using TreloDAL.Data;
+using System.Threading.Tasks;
 
 namespace Trelo1.Services
 {
@@ -21,40 +22,40 @@ namespace Trelo1.Services
             _mapper = mapper;
         }
 
-        public void AddUserToBoard(int userId, int boardId)
+        public async Task AddUserToBoard(int userId, int boardId)
         {
             if (userId != 0 && boardId != 0)
             {
-                var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
-                var board = _dbContext.Boards.FirstOrDefault(b => b.Id == boardId);
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                var board = await _dbContext.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
 
                 if (board != null)
                 {
                     board.Users.Add(user);
                 }
-                _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
         }
 
-        public void CreateBoard(BoardDto boardDto)
+        public async Task CreateBoard(BoardDto boardDto)
         {
             if(boardDto != null)
             {
                 var board = _mapper.Map<Board>(boardDto);
                 _dbContext.Boards.Add(board);
-                _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
         }
 
-        public bool DeleteBoard(int boardId)
+        public async Task<bool> DeleteBoard(int boardId)
         {
             if (boardId != 0)
             {
-                var board = _dbContext.Boards.FirstOrDefault(b => b.Id == boardId);
+                var board = await _dbContext.Boards.FirstOrDefaultAsync(b => b.Id == boardId);
                 if(board != null)
                 {
                     _dbContext.Boards.Remove(board);
-                    _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
                     return true;
                 }  
             }
@@ -62,17 +63,17 @@ namespace Trelo1.Services
             return false;
         }
 
-        public bool DeleteUserFromBoard(int userId, int boardId)
+        public async Task<bool> DeleteUserFromBoard(int userId, int boardId)
         {
             if (userId != 0 && boardId != 0)
             {
-                var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
-                var board = _dbContext.Boards.Include(p=>p.Users).FirstOrDefault(b => b.Id == boardId);
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                var board = await _dbContext.Boards.Include(p=>p.Users).FirstOrDefaultAsync(b => b.Id == boardId);
 
                 if (board != null)
                 {
                     board.Users.Remove(user);
-                    _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
                     return true;
                 }
             }
