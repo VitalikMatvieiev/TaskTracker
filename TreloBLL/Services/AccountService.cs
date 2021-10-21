@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using TreloBLL.DtoModel;
 using TreloBLL.Interfaces;
 using TreloDAL.Data;
@@ -25,9 +26,9 @@ namespace TreloBLL.Services
             _mapper = mapper;
         }
 
-        public AuthenticateResponse Authenticate(AuthenticateRequest model, string ip)
+        public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ip)
         {
-            User user = _dbContext.Users.Include(p=>p.Role).Include(p=>p.RefreshTokens).FirstOrDefault(x => x.Email == model.Username && x.Password == model.Password);
+            User user = await _dbContext.Users.Include(p=>p.Role).Include(p=>p.RefreshTokens).FirstOrDefaultAsync(x => x.Email == model.Username && x.Password == model.Password);
             
             if(user == null)
             {
@@ -39,14 +40,14 @@ namespace TreloBLL.Services
 
             var refreshToken = _mapper.Map<RefreshToken>(refreshTokenDto);
             user.RefreshTokens.Add(refreshToken);
-            _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
 
             return new AuthenticateResponse(user, jwtToken, refreshToken.Token);
         }
 
-        public AuthenticateResponse RefreshToken(string token, string ipAddress)
+        public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
         {
-            var user = _dbContext.Users.Include(p => p.Role).Include(p => p.RefreshTokens).FirstOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+            var user = await _dbContext.Users.Include(p => p.Role).Include(p => p.RefreshTokens).FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (user == null)
             {
@@ -65,16 +66,16 @@ namespace TreloBLL.Services
 
             user.RefreshTokens.Add(newRefreshToken);
 
-            _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
 
             var jwtToken = GenerateJWTToken(user);
 
             return new AuthenticateResponse(user, jwtToken, refreshToken.Token);
         }
 
-        public bool RevokeToken(string token, string ipAddress)
+        public async Task<bool> RevokeToken(string token, string ipAddress)
         {
-            var user = _dbContext.Users.Include(p => p.RefreshTokens).FirstOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+            var user = await _dbContext.Users.Include(p => p.RefreshTokens).FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
 
             if (user == null)
             {
@@ -91,7 +92,7 @@ namespace TreloBLL.Services
 
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
-            _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
 
             return true;
         }
