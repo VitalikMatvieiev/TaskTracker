@@ -10,7 +10,6 @@ using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class ReportController : ControllerBase
@@ -23,6 +22,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
+        [Route("api/report/{userId}")]
         public IActionResult GetCsvUserTaskReport(int userId)
         {
             var report = _reportService.GenereteUserTasksReport(userId);
@@ -31,6 +31,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
+        [Route("api/report/{boardId}")]
         public IActionResult GetCsvBoardTaskReport(int boardId)
         {
             var report = _reportService.GenereteBoardTasksReport(boardId);

@@ -11,7 +11,6 @@ using TreloBLL.DtoModel;
 
 namespace Trelo1.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class OrganizationController : ControllerBase
@@ -22,18 +21,21 @@ namespace Trelo1.Controllers
             _organizationService = organizationService;
         }
         [HttpPost]
+        [Route("api/org/")]
         public IActionResult CreateOrg(OrganiztionDto organization)
         {
             _organizationService.CreateOrganization(organization);
             return Ok();
         }
         [HttpDelete]
+        [Route("api/org/{orgId}")]
         public IActionResult DeleteOrg(int orgId)
         {
             _organizationService.DeleteOrganization(orgId);
             return Ok();
         }
         [HttpPost]
+        [Route("api/org/{boardId}/{orgId}")]
         public IActionResult ChangeOganizationForBoard(int boardId, int orgId)
         {
             _organizationService.AddBoardToOrg(boardId, orgId);

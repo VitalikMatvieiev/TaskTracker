@@ -10,7 +10,6 @@ using TreloBLL.DtoModel;
 
 namespace Trelo1.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
     public class BoardController : ControllerBase
@@ -22,6 +21,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
+        [Route("api/boards/")]
         [Authorize(Roles = "Admin")]
         public IEnumerable<BoardDto> GetAllBoards()
         {
@@ -29,6 +29,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
+        [Route("api/board/")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateBoard(BoardDto board)
         {
@@ -45,6 +46,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
+        [Route("api/board/{userId}/{boardId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddUserToBoard(int userId, int boardId)
         {
@@ -53,6 +55,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpDelete]
+        [Route("api/board/{boardId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBoard(int boardId)
         {
@@ -64,6 +67,7 @@ namespace Trelo1.Controllers
             return NoContent();
         }
         [HttpDelete]
+        [Route("api/board/{userId}/{boardId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserFromBoard(int userId, int boardId)
         {

@@ -15,7 +15,6 @@ using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -27,6 +26,7 @@ namespace Trelo1.Controllers
 
         [AllowAnonymous]
         [HttpPost()]
+        [Route("api/account/authenticate")]
         public async Task<IActionResult> Authenticate(AuthenticateRequest authenticateRequest)
         {
             var tokens = await _accountService.Authenticate(authenticateRequest,IpAddress());
@@ -42,6 +42,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost()]
+        [Route("api/account/refresh")]
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
@@ -57,6 +58,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost()]
+        [Route("api/account/revoke")]
         public async Task<IActionResult> RevokeToken(string tokenForRevoke)
         {
             var token = tokenForRevoke ?? Request.Cookies["refreshToken"];
