@@ -8,8 +8,8 @@ namespace Trelo1.Interfaces
 {
     public interface IOrganizationService
     {
-        void CreateOrganization(OrganiztionDto organization);
-        bool DeleteOrganization(int organizationId);
-        void AddBoardToOrg(int boardId, int orgId);
+        Task CreateOrganization(OrganiztionDto organization);
+        Task<bool> DeleteOrganization(int organizationId);
+        Task AddBoardToOrg(int boardId, int orgId);
     }
 }

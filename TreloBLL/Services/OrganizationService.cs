@@ -6,6 +6,7 @@ using TreloDAL.Models;
 using AutoMapper;
 using TreloBLL.DtoModel;
 using TreloDAL.Data;
+using System.Threading.Tasks;
 
 namespace Trelo1.Services
 {
@@ -19,40 +20,40 @@ namespace Trelo1.Services
             _mapper = mapper;
         }
 
-        public void CreateOrganization(OrganiztionDto organizationDto)
+        public async Task CreateOrganization(OrganiztionDto organizationDto)
         {
             if(organizationDto != null)
             {
                 var organization = _mapper.Map<Organization>(organizationDto);
                 _dbContext.Organizations.Add(organization);
-                _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
         }
 
-        public bool DeleteOrganization(int organizationId)
+        public async Task<bool> DeleteOrganization(int organizationId)
         {
             if (organizationId != 0)
             {
-                var organization = _dbContext.Organizations.FirstOrDefault(o => o.Id == organizationId);
+                var organization = await _dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == organizationId);
                 if(organization != null)
                 {
                     _dbContext.Organizations.Remove(organization);
-                    _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
                     return true;
                 }
             }
             return false;
         }
-        public void AddBoardToOrg(int boardId, int orgId)
+        public async Task AddBoardToOrg(int boardId, int orgId)
         {
             if(boardId != 0 && orgId != 0)
             {
-                var organization = _dbContext.Organizations.Include(p=>p.Boards).FirstOrDefault(o => o.Id == orgId);
+                var organization = await _dbContext.Organizations.Include(p=>p.Boards).FirstOrDefaultAsync(o => o.Id == orgId);
                 var board = _dbContext.Boards.FirstOrDefault(b => b.Id == boardId);
                 if (organization != null && board != null)
                 {
                     organization.Boards.Add(board);
-                    _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
                 }
             }
         }
