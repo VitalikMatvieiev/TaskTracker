@@ -80,7 +80,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPut]
-        [Route("/api/task/assigntouser/{taskId}/{userId}")]
+        [Route("/api/task/{taskId}/assigntouser/{userId}")]
         public async Task<IActionResult> AssignUserToTask(int taskId, int userId)
         {
             await _taskService.AssignUserToTask(taskId, userId);

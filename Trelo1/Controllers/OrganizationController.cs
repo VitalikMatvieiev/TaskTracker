@@ -35,7 +35,7 @@ namespace Trelo1.Controllers
             return Ok();
         }
         [HttpPost]
-        [Route("api/org/{boardId}/{orgId}")]
+        [Route("api/org/{orgId}/board/{boardId}/")]
         public IActionResult ChangeOganizationForBoard(int boardId, int orgId)
         {
             _organizationService.AddBoardToOrg(boardId, orgId);

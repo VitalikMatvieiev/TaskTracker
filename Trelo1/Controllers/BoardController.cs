@@ -46,7 +46,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("api/board/{userId}/{boardId}")]
+        [Route("api/board/{boardId}/add-user/{userId}/")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddUserToBoard(int userId, int boardId)
         {
@@ -67,7 +67,7 @@ namespace Trelo1.Controllers
             return NoContent();
         }
         [HttpDelete]
-        [Route("api/board/{userId}/{boardId}")]
+        [Route("api/board/{boardId}/user/{userId}/")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserFromBoard(int userId, int boardId)
         {
