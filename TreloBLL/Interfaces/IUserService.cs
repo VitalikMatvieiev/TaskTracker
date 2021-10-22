@@ -14,5 +14,6 @@ namespace Trelo1.Interfaces
         Task<IList<UserDto>> GetUserInBoard(int boadrdId);
         Task<IList<UserDto>> GetUserInOrganization(int organizationId);
         IList<UserDto> GetAllUsers();
+        Task<User> GetUserData(string Email);
     }
 }

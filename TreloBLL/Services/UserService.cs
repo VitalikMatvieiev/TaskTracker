@@ -56,6 +56,12 @@ namespace Trelo1.Services
             return userDtos;
         }
 
+        public async Task<User> GetUserData(string Email)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == Email);
+            return user;
+        }
+
         public async Task<IList<UserDto>> GetUserInBoard(int boadrdId)
         {
             if(boadrdId != 0)
