@@ -72,13 +72,13 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
-        [Route("/api/task/user/{userId}")]
+        [Route("/api/task/user/")]
         [Authorize(Roles = "Admin")]
-        public async Task<IList<TaskDto>> GetUserTasks(int userId)
+        public async Task<IList<TaskDto>> GetUserTasks(SingleModel<int> userId)
         {
             IEnumerable<TaskDto> tasks;
             
-            if(userId == 0)
+            if(userId.Value == 0)
             {
                 var userEmail = User.Identity.Name;
                 var user = await _userService.GetUserData(userEmail);
@@ -86,17 +86,17 @@ namespace Trelo1.Controllers
             } 
             else
             {
-                tasks = await _taskService.GetUserTasks(userId);
+                tasks = await _taskService.GetUserTasks(userId.Value);
             }
 
             return tasks?.ToList();
         }
 
         [HttpPut]
-        [Route("/api/task/{taskId}/assigntouser/{userId}")]
-        public async Task<IActionResult> AssignUserToTask(int taskId, int userId)
+        [Route("/api/task/{taskId}/assigntouser/")]
+        public async Task<IActionResult> AssignUserToTask(int taskId, SingleModel<int> userId)
         {
-            if(userId == 0)
+            if(userId.Value == 0)
             {
                 var userEmail = User.Identity.Name;
                 var user = await _userService.GetUserData(userEmail);
@@ -105,7 +105,7 @@ namespace Trelo1.Controllers
             }
             else
             {
-                await _taskService.AssignUserToTask(taskId, userId);
+                await _taskService.AssignUserToTask(taskId, userId.Value);
                 return Ok();
             }
         }

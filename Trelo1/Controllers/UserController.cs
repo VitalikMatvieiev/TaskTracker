@@ -42,10 +42,10 @@ namespace Trelo1.Controllers
             return Ok();
         }
         [HttpDelete]
-        [Route("api/user/{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [Route("api/user/")]
+        public async Task<IActionResult> DeleteUser(SingleModel<int> id)
         {
-            bool hasDeleted = await _userService.DeleteUser(id);
+            bool hasDeleted = await _userService.DeleteUser(id.Value);
             if(hasDeleted)
             {
                 return Ok();

@@ -46,11 +46,11 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("api/board/{boardId}/add-user/{userId}/")]
+        [Route("api/board/{boardId}/add-user/")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AddUserToBoard(int userId, int boardId)
+        public async Task<IActionResult> AddUserToBoard(int boardId, SingleModel<int> userId)
         {
-            await _boardService.AddUserToBoard(userId, boardId);
+            await _boardService.AddUserToBoard(userId.Value, boardId);
             return Ok();
         }
 
@@ -67,11 +67,11 @@ namespace Trelo1.Controllers
             return NoContent();
         }
         [HttpDelete]
-        [Route("api/board/{boardId}/user/{userId}/")]
+        [Route("api/board/{boardId}/user/")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteUserFromBoard(int userId, int boardId)
+        public async Task<IActionResult> DeleteUserFromBoard(int boardId, SingleModel<int> userId)
         {
-            bool hasDeleted = await _boardService.DeleteUserFromBoard(userId, boardId);
+            bool hasDeleted = await _boardService.DeleteUserFromBoard(userId.Value, boardId);
             if (hasDeleted)
             {
                 return Ok();
