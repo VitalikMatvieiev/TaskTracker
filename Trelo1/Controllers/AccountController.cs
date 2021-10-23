@@ -15,7 +15,6 @@ using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -27,9 +26,10 @@ namespace Trelo1.Controllers
 
         [AllowAnonymous]
         [HttpPost()]
-        public IActionResult Authenticate(AuthenticateRequest authenticateRequest)
+        [Route("api/account/authenticate")]
+        public async Task<IActionResult> Authenticate(AuthenticateRequest authenticateRequest)
         {
-            var tokens = _accountService.Authenticate(authenticateRequest,IpAddress());
+            var tokens = await _accountService.Authenticate(authenticateRequest,IpAddress());
 
             if(tokens == null)
             {
@@ -41,12 +41,12 @@ namespace Trelo1.Controllers
             return Ok(tokens);
         }
 
-        [AllowAnonymous]
         [HttpPost()]
-        public IActionResult RefreshToken()
+        [Route("api/account/refresh")]
+        public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
-            var response = _accountService.RefreshToken(refreshToken, IpAddress());
+            var response = await _accountService.RefreshToken(refreshToken, IpAddress());
 
             if (response == null)
                 return Unauthorized(new { message = "Invalid token" });
@@ -57,16 +57,16 @@ namespace Trelo1.Controllers
 
         }
 
-        [AllowAnonymous]
         [HttpPost()]
-        public IActionResult RevokeToken(string tokenForRevoke)
+        [Route("api/account/revoke")]
+        public async Task<IActionResult> RevokeToken(string tokenForRevoke)
         {
             var token = tokenForRevoke ?? Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required" });
 
-            var response = _accountService.RevokeToken(token, IpAddress());
+            var response = await _accountService.RevokeToken(token, IpAddress());
 
             if (!response)
                 return NotFound(new { message = "Token not found" });

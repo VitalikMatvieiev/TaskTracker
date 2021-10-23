@@ -9,12 +9,12 @@ namespace Trelo1.Interfaces
 {
     public interface ITaskService
     {
-        void Create(TaskDto userTask);
-        bool Delete(int id);
-        void AssignUserToTask(int taskId, int userId);
-        TaskDto GetTask(int taskId);
-        IEnumerable<TaskDto> GetUserTasks(int userId);
-        IEnumerable<TaskDto> GetBoardTasks(int boardId);
+        Task Create(TaskDto userTask);
+        Task<bool> Delete(int id);
+        Task AssignUserToTask(int taskId, int userId);
+        Task<TaskDto> GetTask(int taskId);
+        Task<IEnumerable<TaskDto>> GetUserTasks(int userId);
+        Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId);
         IEnumerable<TaskDto> GetOrganizationTasks(int organizationId);
     }
 }

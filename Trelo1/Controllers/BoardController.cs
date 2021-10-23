@@ -10,7 +10,6 @@ using TreloBLL.DtoModel;
 
 namespace Trelo1.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
     public class BoardController : ControllerBase
@@ -22,6 +21,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
+        [Route("api/boards/")]
         [Authorize(Roles = "Admin")]
         public IEnumerable<BoardDto> GetAllBoards()
         {
@@ -29,12 +29,13 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
+        [Route("api/boards/")]
         [Authorize(Roles = "Admin")]
-        public IActionResult CreateBoard(BoardDto board)
+        public async Task<IActionResult> CreateBoard(BoardDto board)
         {
             if (board != null)
             {
-                _boardService.CreateBoard(board);
+                await _boardService.CreateBoard(board);
                 return Ok();
             }
             else
@@ -45,18 +46,20 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
+        [Route("api/boards/{boardId}/add-user/")]
         [Authorize(Roles = "Admin")]
-        public IActionResult AddUserToBoard(int userId, int boardId)
+        public async Task<IActionResult> AddUserToBoard(int boardId, SingleModel<int> userId)
         {
-            _boardService.AddUserToBoard(userId, boardId);
+            await _boardService.AddUserToBoard(userId.Value, boardId);
             return Ok();
         }
 
         [HttpDelete]
+        [Route("api/boards/{boardId}")]
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteBoard(int boardId)
+        public async Task<IActionResult> DeleteBoard(int boardId)
         {
-            bool hasDeleted = _boardService.DeleteBoard(boardId);
+            bool hasDeleted = await _boardService.DeleteBoard(boardId);
             if (hasDeleted)
             {
                 return Ok();
@@ -64,10 +67,11 @@ namespace Trelo1.Controllers
             return NoContent();
         }
         [HttpDelete]
+        [Route("api/boards/{boardId}/user/")]
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteUserFromBoard(int userId, int boardId)
+        public async Task<IActionResult> DeleteUserFromBoard(int boardId, SingleModel<int> userId)
         {
-            bool hasDeleted = _boardService.DeleteUserFromBoard(userId, boardId);
+            bool hasDeleted = await _boardService.DeleteUserFromBoard(userId.Value, boardId);
             if (hasDeleted)
             {
                 return Ok();

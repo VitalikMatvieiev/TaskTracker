@@ -11,18 +11,20 @@ using TreloBLL.DtoModel;
 
 namespace Trelo1.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
     public class TaskController : ControllerBase
     {
         private readonly ITaskService _taskService;
+        private readonly IUserService _userService;
 
-        public TaskController(ITaskService taskService)
+        public TaskController(ITaskService taskService, IUserService userService)
         {
             _taskService = taskService;
+            _userService = userService;
         }
         [HttpPost]
+        [Route("/api/tasks/")]
         public IActionResult CreateTask(TaskDto userTask)
         {
             _taskService.Create(userTask);
@@ -30,9 +32,10 @@ namespace Trelo1.Controllers
         }
         
         [HttpDelete]
-        public IActionResult DeleteTask(int taskId)
+        [Route("/api/tasks/{taskId}")]
+        public async Task<IActionResult> DeleteTask(int taskId)
         {
-            bool hasDeleted = _taskService.Delete(taskId);
+            bool hasDeleted = await _taskService.Delete(taskId);
             if(hasDeleted)
             {
                 return Ok();
@@ -43,13 +46,15 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        public IEnumerable<TaskDto> GetBoardTasks(int boardId)
+        [Route("/api/boards/{boardId}/tasks/")]
+        public async Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId)
         {
-            IEnumerable<TaskDto> tasks = _taskService.GetBoardTasks(boardId);
+            IEnumerable<TaskDto> tasks = await _taskService.GetBoardTasks(boardId);
             return tasks;
         }
         
         [HttpGet]
+        [Route("/api/tasks/organizations/{organizationId}/task/")]
         [Authorize(Roles = "Admin")]
         public IEnumerable<TaskDto> GetOrganizationTasks(int organizationId)
         {
@@ -58,26 +63,51 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        public TaskDto GetTask(int taskId)
+        [Route("/api/tasks/{taskId}")]
+        public async Task<TaskDto> GetTask(int taskId)
         {
-            var task = _taskService.GetTask(taskId);
+            var task = await _taskService.GetTask(taskId);
 
             return task;
         }
 
         [HttpGet]
+        [Route("/api/tasks/users/")]
         [Authorize(Roles = "Admin")]
-        public IList<TaskDto> GetUserTasks(int userId)
+        public async Task<IList<TaskDto>> GetUserTasks(SingleModel<int> userId)
         {
-            var tasks = _taskService.GetUserTasks(userId)?.ToList();
+            IEnumerable<TaskDto> tasks;
+            
+            if(userId.Value == 0)
+            {
+                var userEmail = User.Identity.Name;
+                var user = await _userService.GetUserData(userEmail);
+                tasks = await _taskService.GetUserTasks(user.Id);
+            } 
+            else
+            {
+                tasks = await _taskService.GetUserTasks(userId.Value);
+            }
 
-            return tasks;
+            return tasks?.ToList();
         }
+
         [HttpPut]
-        public IActionResult AssignUserToTask(int taskId, int userId)
+        [Route("/api/tasks/{taskId}/assigntouser/")]
+        public async Task<IActionResult> AssignUserToTask(int taskId, SingleModel<int> userId)
         {
-            _taskService.AssignUserToTask(taskId, userId);
-            return Ok();
+            if(userId.Value == 0)
+            {
+                var userEmail = User.Identity.Name;
+                var user = await _userService.GetUserData(userEmail);
+                await _taskService.AssignUserToTask(taskId, user.Id);
+                return Ok();
+            }
+            else
+            {
+                await _taskService.AssignUserToTask(taskId, userId.Value);
+                return Ok();
+            }
         }
 
     }

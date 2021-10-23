@@ -1,62 +1,59 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using TreloDAL.Data;
 using Trelo1.Interfaces;
-
-using TreloDAL.UnitOfWork;
 using TreloDAL.Models;
 using AutoMapper;
 using TreloBLL.DtoModel;
+using TreloDAL.Data;
+using System.Threading.Tasks;
 
 namespace Trelo1.Services
 {
     public class OrganizationService : IOrganizationService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
-        public OrganizationService(UnitOfWork unitOfWork, IMapper mapper)
+        public OrganizationService(TreloDbContext dbContext, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
 
-        public void CreateOrganization(OrganiztionDto organizationDto)
+        public async Task CreateOrganization(OrganiztionDto organizationDto)
         {
             if(organizationDto != null)
             {
                 var organization = _mapper.Map<Organization>(organizationDto);
-                _unitOfWork.Organizations.Create(organization);
-                _unitOfWork.SaveChanges();
+                _dbContext.Organizations.Add(organization);
+                await _dbContext.SaveChangesAsync();
             }
         }
 
-        public bool DeleteOrganization(int organizationId)
+        public async Task<bool> DeleteOrganization(int organizationId)
         {
             if (organizationId != 0)
             {
-                var organization = _unitOfWork.Organizations.FirstOrDefault(o => o.Id == organizationId);
+                var organization = await _dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == organizationId);
                 if(organization != null)
                 {
-                    _unitOfWork.Organizations.Remove(organization);
-                    _unitOfWork.SaveChanges();
+                    _dbContext.Organizations.Remove(organization);
+                    await _dbContext.SaveChangesAsync();
                     return true;
                 }
             }
             return false;
         }
-        public void AddBoardToOrg(int boardId, int orgId)
+        public async Task AddBoardToOrg(int boardId, int orgId)
         {
             if(boardId != 0 && orgId != 0)
             {
-                var organization = _unitOfWork.Organizations.FirstOrDefault(o => o.Id == orgId, includeProperties: "Boards");
-                var board = _unitOfWork.Boards.FirstOrDefault(b => b.Id == boardId);
+                var organization = await _dbContext.Organizations.Include(p=>p.Boards).FirstOrDefaultAsync(o => o.Id == orgId);
+                var board = _dbContext.Boards.FirstOrDefault(b => b.Id == boardId);
                 if (organization != null && board != null)
                 {
                     organization.Boards.Add(board);
-                    _unitOfWork.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                 }
             }
         }

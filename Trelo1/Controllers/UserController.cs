@@ -12,7 +12,6 @@ using TreloBLL.DtoModel;
 namespace Trelo1.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
     [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
@@ -24,13 +23,15 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
+        [Route("api/users/")]
         public IList<UserDto> GetAllUsers()
         {
             IList<UserDto> userDtos = _userService.GetAllUsers();
             return userDtos;
         }
+
         [HttpPost]
-        [ActionName("CreateUser")]
+        [Route("api/users/")]
         public IActionResult CreateUser([FromBody] UserDto user)
         {
             if(user == null)
@@ -41,9 +42,10 @@ namespace Trelo1.Controllers
             return Ok();
         }
         [HttpDelete]
-        public IActionResult DeleteUser(int id)
+        [Route("api/users/")]
+        public async Task<IActionResult> DeleteUser(SingleModel<int> id)
         {
-            bool hasDeleted = _userService.DeleteUser(id);
+            bool hasDeleted = await _userService.DeleteUser(id.Value);
             if(hasDeleted)
             {
                 return Ok();

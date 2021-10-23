@@ -9,10 +9,10 @@ namespace Trelo1.Interfaces
 {
     public interface IBoardService
     {
-        void CreateBoard(BoardDto board);
-        bool DeleteBoard(int boardId);
-        void AddUserToBoard(int userId, int boardId);
-        bool DeleteUserFromBoard(int userId, int boardId);
+        Task CreateBoard(BoardDto board);
+        Task<bool> DeleteBoard(int boardId);
+        Task AddUserToBoard(int userId, int boardId);
+        Task<bool> DeleteUserFromBoard(int userId, int boardId);
         List<BoardDto> GetBoards();
     }
 }

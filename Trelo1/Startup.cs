@@ -13,9 +13,6 @@ using TreloDAL.Data;
 using Trelo1.Interfaces;
 using Trelo1.Services;
 using System.Text.Json.Serialization;
-using TreloDAL.Repository.IRepository;
-using TreloDAL.Repository;
-using TreloDAL.UnitOfWork;
 using AutoMapper;
 using TreloBLL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -48,8 +45,6 @@ namespace Trelo1
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IReportService, ReportService>();
 
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<UnitOfWork>();
 
             services.AddAutoMapper(typeof(MappingProfile));
 

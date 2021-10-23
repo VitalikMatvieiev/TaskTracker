@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TreloBLL.DtoModel;
 using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class ReportController : ControllerBase
@@ -23,14 +23,16 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCsvUserTaskReport(int userId)
+        [Route("api/usrers/report/")]
+        public IActionResult GetCsvUserTaskReport(SingleModel<int> userId)
         {
-            var report = _reportService.GenereteUserTasksReport(userId);
+            var report = _reportService.GenereteUserTasksReport(userId.Value);
             var date = DateTime.Now;
-            return File(Encoding.UTF8.GetBytes(report), "text/csv", $"user_{userId}_tasks_{date}.csv");
+            return File(Encoding.UTF8.GetBytes(report), "text/csv", $"user_{userId.Value}_tasks_{date}.csv");
         }
 
         [HttpGet]
+        [Route("api/boards/{boardId}/report/")]
         public IActionResult GetCsvBoardTaskReport(int boardId)
         {
             var report = _reportService.GenereteBoardTasksReport(boardId);

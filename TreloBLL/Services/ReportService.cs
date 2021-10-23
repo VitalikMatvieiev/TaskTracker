@@ -1,26 +1,28 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using TreloBLL.Interfaces;
-using TreloDAL.UnitOfWork;
+using TreloDAL.Data;
 
 namespace TreloBLL.Services
 {
     public class ReportService : IReportService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public ReportService(UnitOfWork unitOfWork, IMapper mapper)
+        public ReportService(TreloDbContext dbContext, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
 
         public string GenereteBoardTasksReport(int boardId)
         {
-            var boardTasks = _unitOfWork.UserTasks.GetAll(u => u.BoardId == boardId);
+            var boardTasks = _dbContext.Tasks.Where(u => u.BoardId == boardId);
 
             var builder = new StringBuilder();
             builder.AppendLine("Id, Name, Decription, CreatedDate, DueDate");
@@ -36,7 +38,7 @@ namespace TreloBLL.Services
 
         public string GenereteUserTasksReport(int userId)
         {
-            var userTasks = _unitOfWork.UserTasks.GetAll(u => u.AssignedUserId == userId);
+            var userTasks = _dbContext.Tasks.Where(u => u.AssignedUserId == userId);
 
             var builder = new StringBuilder();
             builder.AppendLine("Id, Name, Decription, CreatedDate, DueDate");
