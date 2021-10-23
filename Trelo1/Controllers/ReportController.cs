@@ -23,7 +23,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
-        [Route("api/usrer/report/")]
+        [Route("api/usrers/report/")]
         public IActionResult GetCsvUserTaskReport(SingleModel<int> userId)
         {
             var report = _reportService.GenereteUserTasksReport(userId.Value);
@@ -32,7 +32,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
-        [Route("api/board/{boardId}/report/")]
+        [Route("api/boards/{boardId}/report/")]
         public IActionResult GetCsvBoardTaskReport(int boardId)
         {
             var report = _reportService.GenereteBoardTasksReport(boardId);

@@ -31,7 +31,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("api/user/")]
+        [Route("api/users/")]
         public IActionResult CreateUser([FromBody] UserDto user)
         {
             if(user == null)
@@ -42,7 +42,7 @@ namespace Trelo1.Controllers
             return Ok();
         }
         [HttpDelete]
-        [Route("api/user/")]
+        [Route("api/users/")]
         public async Task<IActionResult> DeleteUser(SingleModel<int> id)
         {
             bool hasDeleted = await _userService.DeleteUser(id.Value);

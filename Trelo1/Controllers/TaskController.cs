@@ -24,7 +24,7 @@ namespace Trelo1.Controllers
             _userService = userService;
         }
         [HttpPost]
-        [Route("/api/task/")]
+        [Route("/api/tasks/")]
         public IActionResult CreateTask(TaskDto userTask)
         {
             _taskService.Create(userTask);
@@ -32,7 +32,7 @@ namespace Trelo1.Controllers
         }
         
         [HttpDelete]
-        [Route("/api/task/{taskId}")]
+        [Route("/api/tasks/{taskId}")]
         public async Task<IActionResult> DeleteTask(int taskId)
         {
             bool hasDeleted = await _taskService.Delete(taskId);
@@ -46,7 +46,7 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        [Route("/api/task/board/{boardId}")]
+        [Route("/api/boards/{boardId}/tasks/")]
         public async Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId)
         {
             IEnumerable<TaskDto> tasks = await _taskService.GetBoardTasks(boardId);
@@ -54,7 +54,7 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        [Route("/api/task/organizationtask/{organizationId}")]
+        [Route("/api/tasks/organizations/{organizationId}/task/")]
         [Authorize(Roles = "Admin")]
         public IEnumerable<TaskDto> GetOrganizationTasks(int organizationId)
         {
@@ -63,7 +63,7 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        [Route("/api/task/{taskId}")]
+        [Route("/api/tasks/{taskId}")]
         public async Task<TaskDto> GetTask(int taskId)
         {
             var task = await _taskService.GetTask(taskId);
@@ -72,7 +72,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
-        [Route("/api/task/user/")]
+        [Route("/api/tasks/users/")]
         [Authorize(Roles = "Admin")]
         public async Task<IList<TaskDto>> GetUserTasks(SingleModel<int> userId)
         {
@@ -93,7 +93,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPut]
-        [Route("/api/task/{taskId}/assigntouser/")]
+        [Route("/api/tasks/{taskId}/assigntouser/")]
         public async Task<IActionResult> AssignUserToTask(int taskId, SingleModel<int> userId)
         {
             if(userId.Value == 0)
