@@ -21,6 +21,7 @@ namespace TreloDAL.Data
             modelBuilder.ApplyConfiguration(new OrganizationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new BoardEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new RoleEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskFileEntityTypeConfiguration());
         }
 
         public DbSet<UserTask> Tasks { get; set; }
@@ -28,5 +29,6 @@ namespace TreloDAL.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Organization> Organizations  { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<TaskFile> TaskFiles { get; set;}
     }
 }
