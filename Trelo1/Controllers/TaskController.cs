@@ -110,5 +110,11 @@ namespace Trelo1.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("api/tasks/upload-file")]
+        public IActionResult UploadFileToTask(IFormFile formFile)
+        {
+            return Ok();
+        }
     }
 }

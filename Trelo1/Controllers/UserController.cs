@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
 using TreloBLL.DtoModel;
-
+using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
@@ -16,10 +18,12 @@ namespace Trelo1.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IFileService _fileService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IFileService fileService)
         {
             _userService = userService;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -51,7 +55,24 @@ namespace Trelo1.Controllers
                 return Ok();
             }
             return NoContent();
-           
+        }
+
+        [HttpPost]
+        [Route("api/users/add-avatar")]
+        public async Task<IActionResult> AddUserAvatar(IFormFile formFile)
+        {
+            if(formFile.Length > 0)
+            {
+                var userAvatar = _fileService.ConvertToByte64(formFile);
+                var userEmail = User.Identity.Name;
+                await _userService.AddUserAvatar(userEmail, userAvatar);
+                return Ok();
+            }
+            else
+            {
+                return NotFound();
+            }
+            
         }
 
     }
