@@ -14,7 +14,7 @@ namespace TreloDAL.Data.Configuration
         public void Configure(EntityTypeBuilder<TaskFile> builder)
         {
             builder.ToTable("TaskFile").HasKey(p => p.DocumentId);
-            builder.HasOne(p => p.UserTask).WithMany(p => p.Tasks).HasForeignKey(p => p.TaskId);
+            builder.HasOne(p => p.UserTask).WithMany(p => p.TaskFiles).HasForeignKey(p => p.TaskId);
         }
     }
 }

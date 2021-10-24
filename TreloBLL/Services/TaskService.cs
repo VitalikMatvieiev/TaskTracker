@@ -8,6 +8,8 @@ using AutoMapper;
 using TreloBLL.DtoModel;
 using TreloDAL.Data;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Trelo1.Services
 {
@@ -24,7 +26,7 @@ namespace Trelo1.Services
 
         public async Task AssignUserToTask(int taskId, int userId)
         {
-            var task = await _dbContext.Tasks.Include(p=>p.AssignedUser).FirstOrDefaultAsync(u => u.Id == taskId);
+            var task = await _dbContext.Tasks.Include(p => p.AssignedUser).FirstOrDefaultAsync(u => u.Id == taskId);
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             task.AssignedUser = user;
             await _dbContext.SaveChangesAsync();
@@ -32,7 +34,7 @@ namespace Trelo1.Services
 
         public async Task Create(TaskDto userTaskDto)
         {
-            if(userTaskDto != null)
+            if (userTaskDto != null)
             {
                 var userTask = _mapper.Map<UserTask>(userTaskDto);
                 _dbContext.Tasks.Add(userTask);
@@ -45,7 +47,7 @@ namespace Trelo1.Services
             if (id != 0)
             {
                 var task = await _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == id);
-                if(task != null)
+                if (task != null)
                 {
                     _dbContext.Tasks.Remove(task);
                     await _dbContext.SaveChangesAsync();
@@ -58,13 +60,13 @@ namespace Trelo1.Services
 
         public async Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId)
         {
-            if(boardId != 0)
+            if (boardId != 0)
             {
                 var board = await _dbContext.Boards.Include(p => p.UserTasks).FirstOrDefaultAsync(b => b.Id == boardId);
                 var taks = board.UserTasks;
                 var boardTaskDto = _mapper.Map<List<TaskDto>>(taks);
                 return boardTaskDto;
-            } 
+            }
             else
             {
                 return null;
@@ -75,8 +77,8 @@ namespace Trelo1.Services
         {
             if (organizationId != 0)
             {
-                var boardInOrganization = _dbContext.Boards.Include(p=>p.UserTasks).Where(o => o.OrganizationId == organizationId);
-                
+                var boardInOrganization = _dbContext.Boards.Include(p => p.UserTasks).Where(o => o.OrganizationId == organizationId);
+
                 List<UserTask> tasks = new List<UserTask>();
                 foreach (var board in boardInOrganization)
                 {
@@ -94,7 +96,7 @@ namespace Trelo1.Services
 
         public async Task<TaskDto> GetTask(int taskId)
         {
-            if(taskId != 0)
+            if (taskId != 0)
             {
                 var task = await _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
                 var taskDto = _mapper.Map<TaskDto>(task);
@@ -118,6 +120,40 @@ namespace Trelo1.Services
             else
             {
                 return null;
+            }
+        }
+
+        public async Task AssigneFileToTask(IFormFile formFile, int taskId)
+        {
+            var task = await _dbContext.Tasks.Include(t => t.TaskFiles).FirstOrDefaultAsync(t => t.Id == taskId);
+            var fileCount = task?.TaskFiles.Count();
+
+            if (fileCount > 5 || task == null)
+            {
+                return;
+            }
+
+            if (formFile?.Length > 0)
+            {
+                var fileNmae = Path.GetFileName(formFile.FileName);
+                var fileExtention = Path.GetExtension(fileNmae);
+                var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()), fileExtention);
+                var objFilesDto = new TaskFileDto()
+                {
+                    FileName = newFileName,
+                    FileType = fileExtention,
+                    TaskId = taskId,
+                };
+
+                using (var target = new MemoryStream())
+                {
+                    formFile.CopyTo(target);
+                    objFilesDto.DataFiles = target.ToArray();
+                    var objFile = _mapper.Map<TaskFile>(objFilesDto);
+                    _dbContext.Add(objFile);
+                    await _dbContext.SaveChangesAsync();
+                }
+
             }
         }
     }

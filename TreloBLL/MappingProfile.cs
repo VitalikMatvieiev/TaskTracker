@@ -16,6 +16,7 @@ namespace TreloBLL
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<UserTask, TaskDto>().ReverseMap();
             CreateMap<RefreshToken, RefreshTokenDto>().ReverseMap();
+            CreateMap<TaskFile, TaskFileDto>().ReverseMap();
         }
     }
 }

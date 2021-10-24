@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,5 +17,7 @@ namespace Trelo1.Interfaces
         Task<IEnumerable<TaskDto>> GetUserTasks(int userId);
         Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId);
         IEnumerable<TaskDto> GetOrganizationTasks(int organizationId);
+        Task AssigneFileToTask(IFormFile formFile, int taskId);
+
     }
 }

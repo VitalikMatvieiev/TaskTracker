@@ -32,7 +32,7 @@ namespace TreloDAL.Models
         public int BoardId { get; set; }
         public Board Board { get; set; }
 
-        public IList<TaskFile> Tasks { get; set; }
+        public IList<TaskFile> TaskFiles { get; set; }
     }
     public enum Priority
     {
