@@ -2,11 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TreloBLL.DtoModel;
 
 namespace TreloBLL.Interfaces
 {
     public interface IFileService
     {
         string ConvertToByte64(IFormFile formFile);
+        void AddNewTypeFile(AllowedFileTypeDto allowedFileTypeDto);
+        void ChangeTypeFile(int fileTypeId, AllowedFileTypeDto allowedFileTypeDto);
     }
 }

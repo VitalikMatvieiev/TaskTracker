@@ -22,6 +22,7 @@ namespace TreloDAL.Data
             modelBuilder.ApplyConfiguration(new BoardEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new RoleEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TaskFileEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AllowedFileTypesEntityTypeConfiguration());
         }
 
         public DbSet<UserTask> Tasks { get; set; }
@@ -30,5 +31,6 @@ namespace TreloDAL.Data
         public DbSet<Organization> Organizations  { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<TaskFile> TaskFiles { get; set;}
+        public DbSet<AllowedFileTypes> AllowedFileTypes { get; set; }
     }
 }
