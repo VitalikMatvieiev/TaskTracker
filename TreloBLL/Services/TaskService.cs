@@ -137,6 +137,10 @@ namespace Trelo1.Services
             {
                 var fileNmae = Path.GetFileName(formFile.FileName);
                 var fileExtention = Path.GetExtension(fileNmae);
+                if (!HasAllowedDocument(fileExtention, formFile.Length))
+                {
+                    return;
+                }
                 var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()), fileExtention);
                 var objFilesDto = new TaskFileDto()
                 {
@@ -155,6 +159,17 @@ namespace Trelo1.Services
                 }
 
             }
+        }
+
+        private bool HasAllowedDocument(string fileExtention, long fileSize)
+        {
+            var allowedTypes = _dbContext.AllowedFileTypes.FirstOrDefault(f => f.FileType == fileExtention);
+            if(allowedTypes != null)
+            {
+                return allowedTypes.AllowedSize >= fileSize / Math.Pow(10, 6) ? true : false; 
+            }
+
+            return false;
         }
     }
 }
