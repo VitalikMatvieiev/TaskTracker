@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
@@ -110,5 +111,12 @@ namespace Trelo1.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("api/tasks/{taskId}/upload-file")]
+        public async Task<IActionResult> AddFileToTaks(int taskId, IFormFile formFile)
+        {
+            await _taskService.AssigneFileToTask(formFile, taskId);
+            return Ok();   
+        }
     }
 }

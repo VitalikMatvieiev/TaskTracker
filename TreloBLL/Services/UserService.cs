@@ -8,6 +8,7 @@ using TreloDAL.Models;
 using TreloBLL.DtoModel;
 using AutoMapper;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace Trelo1.Services
 {
@@ -23,12 +24,21 @@ namespace Trelo1.Services
             _mapper = mapper;
         }
 
+        public async Task AddUserAvatar(string Email, string userAvatar)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == Email);
+            user.Avatar = userAvatar;
+            _dbContext.Update(user);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task Create(UserDto userDto)
         {
             if(userDto != null)
             {
                 var user = _mapper.Map<User>(userDto);
                 await _dbContext.Users.AddAsync(user);
+                _dbContext.Update(user);
                 await _dbContext.SaveChangesAsync();
             }
         }
