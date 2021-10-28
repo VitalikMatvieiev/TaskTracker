@@ -23,7 +23,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
-        [Route("api/usrers/report/")]
+        [Route("api/users/report/")]
         public IActionResult GetCsvUserTaskReport(SingleModel<int> userId)
         {
             var report = _reportService.GenereteUserTasksReport(userId.Value);

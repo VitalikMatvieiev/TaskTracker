@@ -58,7 +58,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("api/users/add-avatar")]
+        [Route("api/users/photos")]
         public async Task<IActionResult> AddUserAvatar(IFormFile formFile)
         {
             if(formFile.Length > 0)

@@ -45,5 +45,15 @@ namespace Trelo1.Controllers
 
             return NoContent();
         }
+
+        [HttpGet]
+        [Route("api/file/{fileId}")]
+        public IActionResult GetFile(int fileId)
+        {
+            var file = _fileService.GetFile(fileId);
+            string x = file.Item2.Substring(1);
+            return File(file.Item1, "application/pdf"); 
+
+        }
     }
 }

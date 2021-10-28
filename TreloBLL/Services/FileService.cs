@@ -50,6 +50,17 @@ namespace TreloBLL.Services
             }
         }
 
+        public (byte[], string) GetFile(int fileId)
+        {
+            var file = _dbContext.TaskFiles.FirstOrDefault(f => f.DocumentId == fileId);
+            if(file != null)
+            {
+                return (file.DataFiles, file.FileType);
+            }
+
+            return (null,null);
+        }
+
         public string ConvertToByte64(IFormFile formFile)
         {
             using (var ms = new MemoryStream())

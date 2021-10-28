@@ -55,7 +55,7 @@ namespace Trelo1.Controllers
         }
         
         [HttpGet]
-        [Route("/api/tasks/organizations/{organizationId}/task/")]
+        [Route("/api/organizations/{organizationId}/tasks/")]
         [Authorize(Roles = "Admin")]
         public IEnumerable<TaskDto> GetOrganizationTasks(int organizationId)
         {
@@ -73,7 +73,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpGet]
-        [Route("/api/tasks/users/")]
+        [Route("/api/users/tasks/")]
         [Authorize(Roles = "Admin")]
         public async Task<IList<TaskDto>> GetUserTasks(SingleModel<int> userId)
         {
@@ -94,7 +94,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPut]
-        [Route("/api/tasks/{taskId}/assigntouser/")]
+        [Route("/api/users/tasks/{taskId}/assign/")]
         public async Task<IActionResult> AssignUserToTask(int taskId, SingleModel<int> userId)
         {
             if(userId.Value == 0)
