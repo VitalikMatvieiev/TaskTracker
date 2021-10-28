@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
 using TreloBLL.DtoModel;
@@ -26,12 +27,21 @@ namespace Trelo1.Controllers
         }
         [HttpPost]
         [Route("/api/tasks/")]
+        public async Task<IActionResult> CreateTask([FromForm]string userTask, [FromForm]IList<IFormFile> formFilesm)
+        {
+            var userTaskObj = JsonSerializer.Deserialize<TaskDto>(userTask);
+            await _taskService.Create(userTaskObj, formFilesm, null);
+            return Ok();
+        }
+
+/*        [HttpPost]
+        [Route("/api/tasks/")]
         public IActionResult CreateTask(TaskDto userTask)
         {
             _taskService.Create(userTask);
             return Ok();
-        }
-        
+        }*/
+
         [HttpDelete]
         [Route("/api/tasks/{taskId}")]
         public async Task<IActionResult> DeleteTask(int taskId)
@@ -111,12 +121,12 @@ namespace Trelo1.Controllers
             }
         }
 
-        [HttpPost]
+/*        [HttpPost]
         [Route("api/tasks/{taskId}/upload-file")]
-        public async Task<IActionResult> AddFileToTaks(int taskId, IFormFile formFile)
+        public async Task<IActionResult> AddFileToTaks(int taskId, IList<IFormFile> formFile)
         {
             await _taskService.AssigneFileToTask(formFile, taskId);
             return Ok();   
-        }
+        }*/
     }
 }

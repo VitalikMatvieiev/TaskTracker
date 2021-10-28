@@ -10,11 +10,13 @@ using TreloDAL.Data;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Trelo1.Services
 {
     public class TaskService : ITaskService
     {
+        private const int MaxFileCount = 5;
         private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
 
@@ -32,10 +34,27 @@ namespace Trelo1.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task Create(TaskDto userTaskDto)
+        public async Task Create(TaskDto userTaskDto, IList<IFormFile> formFiles, int? taskId)
         {
-            if (userTaskDto != null)
+            if (taskId != null)
             {
+                var task = await _dbContext.Tasks.Include(t => t.TaskFiles).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if(task != null)
+                {
+                    if (formFiles != null)
+                    {
+                        userTaskDto.TaskFiles = GenereteFilesForTask(formFiles);
+                    }
+                    task = _mapper.Map<UserTask>(userTaskDto);
+
+                    _dbContext.Update(task);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            else if (userTaskDto != null)
+            {
+                userTaskDto.TaskFiles = GenereteFilesForTask(formFiles);
                 var userTask = _mapper.Map<UserTask>(userTaskDto);
                 _dbContext.Tasks.Add(userTask);
                 await _dbContext.SaveChangesAsync();
@@ -123,42 +142,40 @@ namespace Trelo1.Services
             }
         }
 
-        public async Task AssigneFileToTask(IFormFile formFile, int taskId)
+        private List<TaskFileDto> GenereteFilesForTask(IList<IFormFile> formFiles)
         {
-            var task = await _dbContext.Tasks.Include(t => t.TaskFiles).FirstOrDefaultAsync(t => t.Id == taskId);
-            var fileCount = task?.TaskFiles.Count();
+            List<TaskFileDto> fileDtos = new List<TaskFileDto>();
 
-            if (fileCount > 5 || task == null)
+            foreach(var file in formFiles)
             {
-                return;
-            }
-
-            if (formFile?.Length > 0)
-            {
-                var fileNmae = Path.GetFileName(formFile.FileName);
-                var fileExtention = Path.GetExtension(fileNmae);
-                if (!HasAllowedDocument(fileExtention, formFile.Length))
+                if (file?.Length > 0)
                 {
-                    return;
+                    var fileExtention = Path.GetExtension(file.FileName);
+                    if(!HasAllowedDocument(fileExtention, file.Length))
+                    {
+                        continue;
+                    }
+
+                    var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()));
+                    var contentType = file.ContentType;
+
+                    var objFilesDto = new TaskFileDto()
+                    {
+                        FileName = newFileName,
+                        FileType = fileExtention,
+                        ContentType = contentType,
+                    };
+
+                    using (var target = new MemoryStream())
+                    {
+                        file.CopyTo(target);
+                        objFilesDto.DataFiles = target.ToArray();
+                        var objFile = _mapper.Map<TaskFile>(objFilesDto);
+                        fileDtos.Add(objFilesDto);
+                    }
                 }
-                var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()), fileExtention);
-                var objFilesDto = new TaskFileDto()
-                {
-                    FileName = newFileName,
-                    FileType = fileExtention,
-                    TaskId = taskId,
-                };
-
-                using (var target = new MemoryStream())
-                {
-                    formFile.CopyTo(target);
-                    objFilesDto.DataFiles = target.ToArray();
-                    var objFile = _mapper.Map<TaskFile>(objFilesDto);
-                    _dbContext.Add(objFile);
-                    await _dbContext.SaveChangesAsync();
-                }
-
             }
+            return fileDtos;
         }
 
         private bool HasAllowedDocument(string fileExtention, long fileSize)
