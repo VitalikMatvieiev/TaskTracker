@@ -43,8 +43,8 @@ namespace Trelo1.Controllers
 
             return StatusCode(401, "You haven't assess to this Org");
         }
-        [HttpPost]
-        [Route("api/organizations/{orgId}/add/boards/{boardId}/")]
+        [HttpPut]
+        [Route("api/organizations/{orgId}/boards/{boardId}/organizations")]
         public IActionResult ChangeOganizationForBoard(int boardId, int orgId)
         {
             var curentUserId = User.GetUserId();
