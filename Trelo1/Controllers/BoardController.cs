@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
 using TreloBLL.DtoModel;
+using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
@@ -15,9 +16,11 @@ namespace Trelo1.Controllers
     public class BoardController : ControllerBase
     {
         private readonly IBoardService _boardService;
-        public BoardController(IBoardService boardService)
+        private readonly IAppAuthentication _appAuthentication;
+        public BoardController(IBoardService boardService, IAppAuthentication appAuthentication)
         {
             _boardService = boardService;
+            _appAuthentication = appAuthentication;
         }
 
         [HttpGet]

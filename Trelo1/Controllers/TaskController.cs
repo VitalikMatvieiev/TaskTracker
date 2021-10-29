@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Trelo1.Interfaces;
 using TreloBLL.ClaimsPrincipalExtensions;
 using TreloBLL.DtoModel;
-
+using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
@@ -21,29 +21,28 @@ namespace Trelo1.Controllers
     {
         private readonly ITaskService _taskService;
         private readonly IUserService _userService;
+        private readonly IAppAuthentication _appAuthentication;
 
-        public TaskController(ITaskService taskService, IUserService userService)
+        public TaskController(ITaskService taskService, IUserService userService, IAppAuthentication appAuthentication)
         {
             _taskService = taskService;
             _userService = userService;
+            _appAuthentication = appAuthentication;
         }
+
         [HttpPost]
         [Route("/api/tasks/")]
         public async Task<IActionResult> CreateTask([FromForm]string userTask, [FromForm]IList<IFormFile> formFilesm)
         {
-            var userId = User.GetUserId();
             var userTaskObj = JsonSerializer.Deserialize<TaskDto>(userTask);
-            await _taskService.Create(userTaskObj, formFilesm, null);
-            return Ok();
+            var currentUserId = User.GetUserId();
+            if (_appAuthentication.HasBoardAsses(currentUserId, userTaskObj.BoardId))
+            {
+                await _taskService.Create(userTaskObj, formFilesm, null);
+                return Ok();
+            }
+            return StatusCode(401, "You haven't asses to this board");
         }
-
-/*        [HttpPost]
-        [Route("/api/tasks/")]
-        public IActionResult CreateTask(TaskDto userTask)
-        {
-            _taskService.Create(userTask);
-            return Ok();
-        }*/
 
         [HttpDelete]
         [Route("/api/tasks/{taskId}")]
@@ -63,8 +62,13 @@ namespace Trelo1.Controllers
         [Route("/api/boards/{boardId}/tasks/")]
         public async Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId)
         {
-            IEnumerable<TaskDto> tasks = await _taskService.GetBoardTasks(boardId);
-            return tasks;
+            var currentUserId = User.GetUserId();
+            if (_appAuthentication.HasBoardAsses(currentUserId, boardId))
+            {
+                IEnumerable<TaskDto> tasks = await _taskService.GetBoardTasks(boardId);
+                return tasks;
+            }
+            return null;
         }
         
         [HttpGet]
@@ -72,17 +76,26 @@ namespace Trelo1.Controllers
         [Authorize(Roles = "Admin")]
         public IEnumerable<TaskDto> GetOrganizationTasks(int organizationId)
         {
-            IEnumerable<TaskDto> tasks = _taskService.GetOrganizationTasks(organizationId);
-            return tasks;
+            var currentUserId = User.GetUserId();
+            if (_appAuthentication.HasOrganizationAsses(currentUserId, organizationId))
+            {
+                IEnumerable<TaskDto> tasks = _taskService.GetOrganizationTasks(organizationId);
+                return tasks;
+            }
+            return null;
         }
         
         [HttpGet]
         [Route("/api/tasks/{taskId}")]
         public async Task<TaskDto> GetTask(int taskId)
         {
-            var task = await _taskService.GetTask(taskId);
-
-            return task;
+            var curentUserId = User.GetUserId();
+            if(_appAuthentication.HasTaskAsses(curentUserId, taskId))
+            {
+                var task = await _taskService.GetTask(taskId);
+                return task;
+            }
+            return null;
         }
 
         [HttpGet]
@@ -123,13 +136,5 @@ namespace Trelo1.Controllers
                 return Ok();
             }
         }
-
-/*        [HttpPost]
-        [Route("api/tasks/{taskId}/upload-file")]
-        public async Task<IActionResult> AddFileToTaks(int taskId, IList<IFormFile> formFile)
-        {
-            await _taskService.AssigneFileToTask(formFile, taskId);
-            return Ok();   
-        }*/
     }
 }
