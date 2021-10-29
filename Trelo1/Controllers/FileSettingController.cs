@@ -11,7 +11,7 @@ using TreloBLL.Interfaces;
 namespace Trelo1.Controllers
 {
     [ApiController]
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     public class FileSettingController : ControllerBase
     {
         private readonly IFileService _fileService;

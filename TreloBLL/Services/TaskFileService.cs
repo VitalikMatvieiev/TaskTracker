@@ -89,15 +89,16 @@ namespace TreloBLL.Services
             return fileDtos;
         }
 
-        public (byte[] ByteArr, string Format) GetFile(int fileId)
+        public TaskFileDto GetFile(int fileId)
         {
             var file = _dbContext.TaskFiles.FirstOrDefault(f => f.DocumentId == fileId);
             if (file != null)
             {
-                return (file.DataFiles, file.ContentType);
+                var fileDto = _mapper.Map<TaskFileDto>(file);
+                return fileDto;
             }
 
-            return (null, null);
+            return null;
         }
 
         private bool HasAllowedDocument(string fileExtention, long fileSize)

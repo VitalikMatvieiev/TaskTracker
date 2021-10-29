@@ -35,12 +35,15 @@ namespace Trelo1.Controllers
         public async Task<IActionResult> CreateTask([FromForm]string userTask, [FromForm]IList<IFormFile> formFilesm)
         {
             var userTaskObj = JsonSerializer.Deserialize<TaskDto>(userTask);
+            
             var currentUserId = User.GetUserId();
+
             if (_appAuthentication.HasBoardAsses(currentUserId, userTaskObj.BoardId))
             {
                 await _taskService.Create(userTaskObj, formFilesm, null);
                 return Ok();
             }
+
             return StatusCode(401, "You haven't asses to this board");
         }
 

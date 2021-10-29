@@ -12,7 +12,7 @@ namespace TreloBLL.Interfaces
         Task ChangeFileName(int taskFileId, string newName);
         Task DeleteFileFromTask(int taskId, int taskFileId);
         List<TaskFileDto> GenereteFilesForTask(IList<IFormFile> formFiles);
-        (byte[] ByteArr, string Format) GetFile(int fileId);
+        TaskFileDto GetFile(int fileId);
 
     }
 }

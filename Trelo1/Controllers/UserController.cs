@@ -14,7 +14,7 @@ using TreloBLL.Interfaces;
 namespace Trelo1.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -28,6 +28,7 @@ namespace Trelo1.Controllers
 
         [HttpGet]
         [Route("api/users/")]
+        [Authorize(Roles = "Admin")]
         public IList<UserDto> GetAllUsers()
         {
             IList<UserDto> userDtos = _userService.GetAllUsers();
@@ -36,6 +37,7 @@ namespace Trelo1.Controllers
 
         [HttpPost]
         [Route("api/users/")]
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateUser([FromBody] UserDto user)
         {
             if(user == null)
@@ -47,6 +49,7 @@ namespace Trelo1.Controllers
         }
         [HttpDelete]
         [Route("api/users/")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(SingleModel<int> id)
         {
             bool hasDeleted = await _userService.DeleteUser(id.Value);
@@ -59,9 +62,10 @@ namespace Trelo1.Controllers
 
         [HttpPost]
         [Route("api/users/photos")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> AddUserAvatar(IFormFile formFile)
         {
-            if(formFile.Length > 0)
+            if(formFile?.Length > 0)
             {
                 var userAvatar = _fileService.ConvertToByte64(formFile);
                 var userEmail = User.Identity.Name;
