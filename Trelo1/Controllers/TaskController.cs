@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
+using TreloBLL.ClaimsPrincipalExtensions;
 using TreloBLL.DtoModel;
 
 
@@ -29,6 +31,7 @@ namespace Trelo1.Controllers
         [Route("/api/tasks/")]
         public async Task<IActionResult> CreateTask([FromForm]string userTask, [FromForm]IList<IFormFile> formFilesm)
         {
+            var userId = User.GetUserId();
             var userTaskObj = JsonSerializer.Deserialize<TaskDto>(userTask);
             await _taskService.Create(userTaskObj, formFilesm, null);
             return Ok();

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.StaticFiles;
+using TreloBLL.Interfaces;
 
 namespace Trelo1.Services
 {
@@ -19,11 +20,13 @@ namespace Trelo1.Services
         private const int MaxFileCount = 5;
         private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ITaskFileService _taskFileService;
 
-        public TaskService(TreloDbContext dbContext, IMapper mapper)
+        public TaskService(TreloDbContext dbContext, IMapper mapper, ITaskFileService taskFileService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _taskFileService = taskFileService;
         }
 
         public async Task AssignUserToTask(int taskId, int userId)
@@ -44,7 +47,7 @@ namespace Trelo1.Services
                 {
                     if (formFiles != null)
                     {
-                        userTaskDto.TaskFiles = GenereteFilesForTask(formFiles);
+                        userTaskDto.TaskFiles = _taskFileService.GenereteFilesForTask(formFiles);
                     }
                     task = _mapper.Map<UserTask>(userTaskDto);
 
@@ -54,7 +57,7 @@ namespace Trelo1.Services
             }
             else if (userTaskDto != null)
             {
-                userTaskDto.TaskFiles = GenereteFilesForTask(formFiles);
+                userTaskDto.TaskFiles = _taskFileService.GenereteFilesForTask(formFiles);
                 var userTask = _mapper.Map<UserTask>(userTaskDto);
                 _dbContext.Tasks.Add(userTask);
                 await _dbContext.SaveChangesAsync();
@@ -140,53 +143,6 @@ namespace Trelo1.Services
             {
                 return null;
             }
-        }
-
-        private List<TaskFileDto> GenereteFilesForTask(IList<IFormFile> formFiles)
-        {
-            List<TaskFileDto> fileDtos = new List<TaskFileDto>();
-
-            foreach(var file in formFiles)
-            {
-                if (file?.Length > 0)
-                {
-                    var fileExtention = Path.GetExtension(file.FileName);
-                    if(!HasAllowedDocument(fileExtention, file.Length))
-                    {
-                        continue;
-                    }
-
-                    var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()));
-                    var contentType = file.ContentType;
-
-                    var objFilesDto = new TaskFileDto()
-                    {
-                        FileName = newFileName,
-                        FileType = fileExtention,
-                        ContentType = contentType,
-                    };
-
-                    using (var target = new MemoryStream())
-                    {
-                        file.CopyTo(target);
-                        objFilesDto.DataFiles = target.ToArray();
-                        var objFile = _mapper.Map<TaskFile>(objFilesDto);
-                        fileDtos.Add(objFilesDto);
-                    }
-                }
-            }
-            return fileDtos;
-        }
-
-        private bool HasAllowedDocument(string fileExtention, long fileSize)
-        {
-            var allowedTypes = _dbContext.AllowedFileTypes.FirstOrDefault(f => f.FileType == fileExtention);
-            if(allowedTypes != null)
-            {
-                return allowedTypes.AllowedSize >= fileSize / Math.Pow(10, 6) ? true : false; 
-            }
-
-            return false;
         }
     }
 }

@@ -11,6 +11,5 @@ namespace TreloBLL.Interfaces
         string ConvertToByte64(IFormFile formFile);
         void AddNewTypeFile(AllowedFileTypeDto allowedFileTypeDto);
         void ChangeTypeFile(int fileTypeId, AllowedFileTypeDto allowedFileTypeDto);
-        (byte[] Date, string Format) GetFile(int fileId);
     }
 }

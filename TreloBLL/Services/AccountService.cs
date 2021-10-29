@@ -102,7 +102,9 @@ namespace TreloBLL.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim("UserId", user.Id.ToString()),
             };
+
             foreach (var role in user.Role)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role.RoleName));

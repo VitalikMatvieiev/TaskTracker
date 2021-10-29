@@ -45,6 +45,7 @@ namespace Trelo1
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<ITaskFileService, TaskFileService>();
 
 
             services.AddAutoMapper(typeof(MappingProfile));
