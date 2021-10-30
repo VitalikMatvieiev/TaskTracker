@@ -11,6 +11,10 @@ namespace TreloBLL.Services
     public class AppAuthentication : IAppAuthentication
     {
         private readonly TreloDbContext _dbContext;
+        public AppAuthentication(TreloDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
         public bool HasBoardAsses(int userId, int boardId)
         {
