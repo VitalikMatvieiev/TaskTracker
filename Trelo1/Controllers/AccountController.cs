@@ -29,9 +29,9 @@ namespace Trelo1.Controllers
         [Route("api/account/authenticate")]
         public async Task<IActionResult> Authenticate(AuthenticateRequest authenticateRequest)
         {
-            var tokens = await _accountService.Authenticate(authenticateRequest,IpAddress());
+            var tokens = await _accountService.Authenticate(authenticateRequest, IpAddress());
 
-            if(tokens == null)
+            if (tokens == null)
             {
                 return BadRequest(new { message = "Username or password is incorrect" });
             }
@@ -59,7 +59,7 @@ namespace Trelo1.Controllers
 
         [HttpPost()]
         [Route("api/account/revoke")]
-        public async Task<IActionResult> RevokeToken(string tokenForRevoke)
+        public async Task<IActionResult> RevokeToken([FromForm]string tokenForRevoke)
         {
             var token = tokenForRevoke ?? Request.Cookies["refreshToken"];
 

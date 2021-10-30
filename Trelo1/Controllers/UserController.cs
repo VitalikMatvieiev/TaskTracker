@@ -38,19 +38,19 @@ namespace Trelo1.Controllers
         [HttpPost]
         [Route("api/users/")]
         [Authorize(Roles = "Admin")]
-        public IActionResult CreateUser([FromBody] UserDto user)
+        public async Task<IActionResult> CreateUser([FromBody] UserDto user)
         {
-            if(user == null)
+            if (user == null)
             {
                 return BadRequest();
             }
-            _userService.Create(user);
+            await _userService.Create(user);
             return Ok();
         }
         [HttpDelete]
         [Route("api/users/")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteUser(SingleModel<int> id)
+        public async Task<IActionResult> DeleteUser([FromBody] SingleModel<int> id)
         {
             bool hasDeleted = await _userService.DeleteUser(id.Value);
             if(hasDeleted)

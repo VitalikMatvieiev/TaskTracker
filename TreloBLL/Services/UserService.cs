@@ -38,7 +38,7 @@ namespace Trelo1.Services
             {
                 var user = _mapper.Map<User>(userDto);
                 await _dbContext.Users.AddAsync(user);
-                _dbContext.Update(user);
+
                 await _dbContext.SaveChangesAsync();
             }
         }
