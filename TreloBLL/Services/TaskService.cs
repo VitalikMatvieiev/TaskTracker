@@ -21,12 +21,16 @@ namespace Trelo1.Services
         private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly ITaskFileService _taskFileService;
+        private readonly IChangeTrackingService _changeTrackingService;
 
-        public TaskService(TreloDbContext dbContext, IMapper mapper, ITaskFileService taskFileService)
+        public TaskService(TreloDbContext dbContext, IMapper mapper, 
+            ITaskFileService taskFileService, 
+            IChangeTrackingService changeTrackingService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _taskFileService = taskFileService;
+            _changeTrackingService = changeTrackingService;
         }
 
         public async Task AssignUserToTask(int taskId, int userId)
@@ -34,6 +38,7 @@ namespace Trelo1.Services
             var task = await _dbContext.Tasks.Include(p => p.AssignedUser).FirstOrDefaultAsync(u => u.Id == taskId);
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             task.AssignedUser = user;
+            _changeTrackingService.TrackChangeGeneric<UserTask, TestLogEntityForLog1>(task, taskId);
             await _dbContext.SaveChangesAsync();
         }
 

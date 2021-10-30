@@ -18,6 +18,7 @@ namespace TreloBLL
             CreateMap<RefreshToken, RefreshTokenDto>().ReverseMap();
             CreateMap<TaskFile, TaskFileDto>().ReverseMap();
             CreateMap<AllowedFileTypes, AllowedFileTypeDto>().ReverseMap();
+            CreateMap<TaskChangesLog, object>().ReverseMap();
         }
     }
 }

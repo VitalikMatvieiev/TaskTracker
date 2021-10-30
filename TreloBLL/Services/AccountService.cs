@@ -127,7 +127,7 @@ namespace TreloBLL.Services
                 audience: AuthOptions.AUDIENCE,
                 notBefore: now,
                 claims: identity.Claims,
-                expires: now.AddMinutes(/*TimeSpan.FromMinutes(AuthOptions.LIFETIME)*/1),
+                expires: now.AddMinutes(/*TimeSpan.FromMinutes(AuthOptions.LIFETIME)*/5),
                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);

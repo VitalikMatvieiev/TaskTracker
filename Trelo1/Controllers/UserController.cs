@@ -65,7 +65,8 @@ namespace Trelo1.Controllers
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> AddUserAvatar(IFormFile formFile)
         {
-            if(formFile?.Length > 0)
+            var myControllerName = ControllerContext.ActionDescriptor.ActionName;
+            if (formFile?.Length > 0)
             {
                 var userAvatar = _fileService.ConvertToByte64(formFile);
                 var userEmail = User.Identity.Name;

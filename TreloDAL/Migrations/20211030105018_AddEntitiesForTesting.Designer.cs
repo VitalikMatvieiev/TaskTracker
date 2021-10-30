@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TreloDAL.Data;
 
 namespace Trelo1.Migrations
 {
     [DbContext(typeof(TreloDbContext))]
-    partial class TreloDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211030105018_AddEntitiesForTesting")]
+    partial class AddEntitiesForTesting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
