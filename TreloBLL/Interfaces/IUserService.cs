@@ -15,6 +15,6 @@ namespace Trelo1.Interfaces
         Task<IList<UserDto>> GetUserInOrganization(int organizationId);
         IList<UserDto> GetAllUsers();
         Task<User> GetUserData(string Email);
-        Task AddUserAvatar(string Email, string userAvatar);
+/*        Task AddUserAvatar(string Email, string userAvatar);*/
     }
 }

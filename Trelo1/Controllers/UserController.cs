@@ -60,10 +60,10 @@ namespace Trelo1.Controllers
             return NoContent();
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [Route("api/users/photos")]
         [Authorize(Roles = "Admin,User")]
-        public async Task<IActionResult> AddUserAvatar(IFormFile formFile)
+        public async Task<IActionResult> AddUserAvatar([FromForm]IFormFile formFile)
         {
             var myControllerName = ControllerContext.ActionDescriptor.ActionName;
             if (formFile?.Length > 0)
@@ -78,7 +78,7 @@ namespace Trelo1.Controllers
                 return NotFound();
             }
             
-        }
+        }*/
 
     }
 }

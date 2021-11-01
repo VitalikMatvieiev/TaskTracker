@@ -24,13 +24,13 @@ namespace Trelo1.Services
             _mapper = mapper;
         }
 
-        public async Task AddUserAvatar(string Email, string userAvatar)
+/*        public async Task AddUserAvatar(string Email, string userAvatar)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == Email);
             user.Avatar = userAvatar;
             _dbContext.Update(user);
             await _dbContext.SaveChangesAsync();
-        }
+        }*/
 
         public async Task Create(UserDto userDto)
         {

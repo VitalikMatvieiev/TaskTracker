@@ -25,7 +25,8 @@ namespace TreloDAL.Data
             modelBuilder.ApplyConfiguration(new AllowedFileTypesEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TaskChangesLogEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TestLogEntityForLog2EntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new TestLogEntityForLog1EntityTypeConfiguration());   
+            modelBuilder.ApplyConfiguration(new TestLogEntityForLog1EntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserCredentialFileEntityTypeConfiguration());
         }
 
         public DbSet<UserTask> Tasks { get; set; }
@@ -38,6 +39,7 @@ namespace TreloDAL.Data
         public DbSet<TaskChangesLog> TaskChangesLogs { get; set; }
         public DbSet<TestLogEntityForLog1> testLogEntityForLog1s { get; set; }
         public DbSet<TestLogEntityForLog2> testLogEntityForLog2s { get; set; }
+        public DbSet<UserCredentialFile> UserCredentialFiles { get; set; }
 
     }
 }
