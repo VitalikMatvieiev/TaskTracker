@@ -18,10 +18,12 @@ namespace TreloBLL.Services
     {
         private readonly IMapper _mapper;
         private readonly TreloDbContext _dbContext;
-        public TaskFileService(IMapper mapper, TreloDbContext context)
+        private readonly IFileService _fileService;
+        public TaskFileService(IMapper mapper, TreloDbContext context, IFileService fileService)
         {
             _mapper = mapper;
             _dbContext = context;
+            _fileService = fileService;
         }
 
         public async Task ChangeFileName(int taskFileId, string newName)
@@ -55,37 +57,13 @@ namespace TreloBLL.Services
 
         public List<TaskFileDto> GenereteFilesForTask(IList<IFormFile> formFiles)
         {
+            var files = _fileService.GenereteFileGeneral(formFiles);
             List<TaskFileDto> fileDtos = new List<TaskFileDto>();
-
-            foreach (var file in formFiles)
+            if (files != null)
             {
-                if (file?.Length > 0)
-                {
-                    var fileExtention = Path.GetExtension(file.FileName);
-                    if (!HasAllowedDocument(fileExtention, file.Length))
-                    {
-                        continue;
-                    }
-
-                    var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()));
-                    var contentType = file.ContentType;
-
-                    var objFilesDto = new TaskFileDto()
-                    {
-                        FileName = newFileName,
-                        FileType = fileExtention,
-                        ContentType = contentType,
-                    };
-
-                    using (var target = new MemoryStream())
-                    {
-                        file.CopyTo(target);
-                        objFilesDto.DataFiles = target.ToArray();
-                        var objFile = _mapper.Map<TaskFile>(objFilesDto);
-                        fileDtos.Add(objFilesDto);
-                    }
-                }
+                fileDtos = _mapper.Map<List<TaskFileDto>>(files);
             }
+
             return fileDtos;
         }
 
@@ -99,17 +77,6 @@ namespace TreloBLL.Services
             }
 
             return null;
-        }
-
-        private bool HasAllowedDocument(string fileExtention, long fileSize)
-        {
-            var allowedTypes = _dbContext.AllowedFileTypes.FirstOrDefault(f => f.FileType == fileExtention);
-            if (allowedTypes != null)
-            {
-                return allowedTypes.AllowedSize >= fileSize / Math.Pow(10, 6) ? true : false;
-            }
-
-            return false;
         }
     }
 }

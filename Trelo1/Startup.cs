@@ -36,7 +36,7 @@ namespace Trelo1
             services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<TreloDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITaskService, TaskService>();
