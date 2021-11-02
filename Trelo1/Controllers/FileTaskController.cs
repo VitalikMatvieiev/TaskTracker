@@ -24,7 +24,7 @@ namespace Trelo1.Controllers
 
         [HttpPost]
         [Route("/api/tasks/files/{fileId}")]
-        public async Task<IActionResult> ChangeFileName(int fileId, [FromBody]string newFileName)
+        public async Task<IActionResult> ChangeFileName(int fileId, [FromForm]string newFileName)
         {
             var curentUserId = User.GetUserId();
             var file = _taskFileService.GetFile(fileId);

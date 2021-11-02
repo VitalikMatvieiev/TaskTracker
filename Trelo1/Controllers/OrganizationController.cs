@@ -25,19 +25,19 @@ namespace Trelo1.Controllers
         }
         [HttpPost]
         [Route("api/organizations/")]
-        public IActionResult CreateOrg(OrganiztionDto organization)
+        public async Task<IActionResult> CreateOrg(OrganiztionDto organization)
         {
-            _organizationService.CreateOrganization(organization);
+            await _organizationService.CreateOrganization(organization);
             return Ok();
         }
         [HttpDelete]
         [Route("api/organizations/{orgId}")]
-        public IActionResult DeleteOrg(int orgId)
+        public async Task<IActionResult> DeleteOrg(int orgId)
         {
             var curentUserId = User.GetUserId();
             if (_appAuthentication.HasOrganizationAsses(curentUserId, orgId))
             {
-                _organizationService.DeleteOrganization(orgId);
+                await _organizationService.DeleteOrganization(orgId);
                 return Ok();
             }
 
@@ -45,12 +45,12 @@ namespace Trelo1.Controllers
         }
         [HttpPut]
         [Route("api/organizations/{orgId}/boards/{boardId}/organizations")]
-        public IActionResult ChangeOganizationForBoard(int boardId, int orgId)
+        public async Task<IActionResult> ChangeOganizationForBoard(int boardId, int orgId)
         {
             var curentUserId = User.GetUserId();
             if (_appAuthentication.HasOrganizationAsses(curentUserId, orgId))
             {
-                _organizationService.AddBoardToOrg(boardId, orgId); 
+                await _organizationService.AddBoardToOrg(boardId, orgId); 
                 return Ok();
             }
 

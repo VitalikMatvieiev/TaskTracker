@@ -36,7 +36,7 @@ namespace TreloBLL.Services
 
         public bool HasTaskAsses(int userId, int taskId)
         {
-            var user = _dbContext.Users.Include(u => u.UserTasks).FirstOrDefault(u => u.Id == userId && u.UserTasks.Any(u=>u.Id==taskId));
+            var user = _dbContext.Users.Include(u => u.UserTasks).FirstOrDefault(u => u.Id == userId && u.UserTasks.Any(u => u.Id == taskId));
             return user == null ? false : true;
         }
     }

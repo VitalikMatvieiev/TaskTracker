@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
+using TreloBLL.ClaimsPrincipalExtensions;
 using TreloBLL.DtoModel;
 using TreloBLL.Interfaces;
 
@@ -60,25 +61,24 @@ namespace Trelo1.Controllers
             return NoContent();
         }
 
-        /*[HttpPost]
+        [HttpPost]
         [Route("api/users/photos")]
         [Authorize(Roles = "Admin,User")]
-        public async Task<IActionResult> AddUserAvatar([FromForm]IFormFile formFile)
+        public async Task<IActionResult> AddUserAvatar([FromForm] IFormFile formFile)
         {
             var myControllerName = ControllerContext.ActionDescriptor.ActionName;
             if (formFile?.Length > 0)
             {
-                var userAvatar = _fileService.ConvertToByte64(formFile);
-                var userEmail = User.Identity.Name;
-                await _userService.AddUserAvatar(userEmail, userAvatar);
+                var userId = User.GetUserId();
+                await _userService.AddUserAvatar(userId, formFile);
                 return Ok();
             }
             else
             {
                 return NotFound();
             }
-            
-        }*/
+
+        }
 
     }
 }

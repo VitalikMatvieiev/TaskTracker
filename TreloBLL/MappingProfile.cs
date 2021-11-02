@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TreloBLL.DtoModel;
+using TreloBLL.Services;
 using TreloDAL.Models;
 
 namespace TreloBLL
@@ -18,8 +19,10 @@ namespace TreloBLL
             CreateMap<RefreshToken, RefreshTokenDto>().ReverseMap();
             CreateMap<TaskFile, TaskFileDto>().ReverseMap();
             CreateMap<AllowedFileTypes, AllowedFileTypeDto>().ReverseMap();
-            CreateMap<TaskChangesLog, object>().ReverseMap();
+            CreateMap<TaskChangesLog, LogGeneralData>().ForMember("EntityId", opt=>opt.MapFrom(c=>c.TaskId)).ReverseMap();
+            CreateMap<TestLogEntityForLog1, LogGeneralData>().ReverseMap();
             CreateMap<TaskFileDto, FileGeneralDto>().ForMember("DataFile", opt => opt.MapFrom(c => c.DataFiles)).ReverseMap();
+            CreateMap<UserCredentialFile, FileGeneralDto>().ForMember("DataFile", opt => opt.MapFrom(c => c.FileData)).ReverseMap();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,13 +19,17 @@ namespace TreloBLL.Services
             _dbContext = dbContext;
             _mapper = mapper;
         }
+        //цей метод тестовий, використовую для роботи дженеріковий
         public void TrackChange(UserTask updateEntity, int taskId)
         {
             var options = new JsonSerializerOptions()
             {
                 IgnoreNullValues = true
             };
-            string updateData = JsonSerializer.Serialize(updateEntity, options);
+            string updateData = JsonConvert.SerializeObject(updateEntity, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
 
             TaskChangesLog taskChangesLog = new TaskChangesLog()
             {
@@ -37,24 +42,38 @@ namespace TreloBLL.Services
         }
         public void TrackChangeGeneric<TrackingEntity,LogEntity>(TrackingEntity newEntity, int entityId) where TrackingEntity : class where LogEntity : class
         {
-            var options = new JsonSerializerOptions()
+            string updateData = JsonConvert.SerializeObject(newEntity, Formatting.Indented, new JsonSerializerSettings
             {
-                IgnoreNullValues = true
-            };
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
 
-            string updateData = JsonSerializer.Serialize(newEntity, options);
-
-            var logDate = new
+            var logDate = new LogGeneralData
             {
                 ChangeTime = DateTime.Now,
                 ChangeData = updateData,
                 EntityId = entityId,
             };
 
-             var logDateEntity = _mapper.Map<LogEntity>(logDate);
+            try
+            {
+                var logDateEntity = _mapper.Map<LogEntity>(logDate);
 
-            _dbContext.Set<LogEntity>().Add(logDateEntity);
-            _dbContext.SaveChanges();
+                _dbContext.Set<LogEntity>().Add(logDateEntity);
+                _dbContext.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw new InvalidCastException("Invalid entity for LogTracing");
+            }
+            
         }
+
+    }
+    public class LogGeneralData
+    {
+        public DateTime ChangeTime { get; set; }
+        public string ChangeData { get; set; }
+        public int EntityId { get; set; }
     }
 }

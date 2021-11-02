@@ -38,7 +38,7 @@ namespace Trelo1.Services
             var task = await _dbContext.Tasks.Include(p => p.AssignedUser).FirstOrDefaultAsync(u => u.Id == taskId);
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             task.AssignedUser = user;
-            _changeTrackingService.TrackChangeGeneric<UserTask, TestLogEntityForLog1>(task, taskId);
+            _changeTrackingService.TrackChangeGeneric<UserTask, TaskChangesLog>(task, taskId);
             await _dbContext.SaveChangesAsync();
         }
 

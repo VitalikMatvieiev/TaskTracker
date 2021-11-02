@@ -9,6 +9,8 @@ using TreloBLL.DtoModel;
 using AutoMapper;
 using System.Threading.Tasks;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using TreloBLL.Interfaces;
 
 namespace Trelo1.Services
 {
@@ -16,21 +18,46 @@ namespace Trelo1.Services
     {
         private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
 
-        public UserService(TreloDbContext dbContext, IMapper mapper)
+        public UserService(TreloDbContext dbContext, IMapper mapper, IFileService fileService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _fileService = fileService;
         }
 
-/*        public async Task AddUserAvatar(string Email, string userAvatar)
+        public async Task AddUserAvatar(int userId, IFormFile userAvatar)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == Email);
-            user.Avatar = userAvatar;
-            _dbContext.Update(user);
-            await _dbContext.SaveChangesAsync();
-        }*/
+            var user = await _dbContext.Users.Include(u=>u.UserCredentialFiles).FirstOrDefaultAsync(u => u.Id == userId);
+
+            if(userAvatar != null)
+            {
+                List<IFormFile> formFiles = new List<IFormFile>();
+                formFiles.Add(userAvatar);
+
+                var fileGeneral = _fileService.GenereteFileGeneral(formFiles).FirstOrDefault();
+                if(fileGeneral == null)
+                {
+                    return;
+                }
+
+                var userCredentialFile = _mapper.Map<UserCredentialFile>(fileGeneral);
+                userCredentialFile.AppFileType = CredetialFileType.Avatar;
+
+                var curentAvatar = user.UserCredentialFiles.FirstOrDefault(f => f.AppFileType == CredetialFileType.Avatar);
+                if (curentAvatar != null)
+                {
+                    user.UserCredentialFiles.Remove(curentAvatar);
+                }
+
+                user.UserCredentialFiles.Add(userCredentialFile);
+
+                _dbContext.Update(user);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
 
         public async Task Create(UserDto userDto)
         {

@@ -37,6 +37,8 @@ namespace TreloBLL.Services
             if(taskFile != null)
             {
                 taskFile.FileName = newName;
+                _dbContext.Update(taskFile);
+                await _dbContext.SaveChangesAsync();
             }
         }
 
