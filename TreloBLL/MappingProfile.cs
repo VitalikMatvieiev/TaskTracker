@@ -20,7 +20,6 @@ namespace TreloBLL
             CreateMap<TaskFile, TaskFileDto>().ReverseMap();
             CreateMap<AllowedFileTypes, AllowedFileTypeDto>().ReverseMap();
             CreateMap<TaskChangesLog, LogGeneralData>().ForMember("EntityId", opt=>opt.MapFrom(c=>c.TaskId)).ReverseMap();
-            CreateMap<TestLogEntityForLog1, LogGeneralData>().ReverseMap();
             CreateMap<TaskFileDto, FileGeneralDto>().ForMember("DataFile", opt => opt.MapFrom(c => c.DataFiles)).ReverseMap();
             CreateMap<UserCredentialFile, FileGeneralDto>().ForMember("DataFile", opt => opt.MapFrom(c => c.FileData)).ReverseMap();
         }
