@@ -10,18 +10,27 @@ using TreloDAL.Data;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.AspNetCore.StaticFiles;
+using TreloBLL.Interfaces;
 
 namespace Trelo1.Services
 {
     public class TaskService : ITaskService
     {
+        private const int MaxFileCount = 5;
         private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ITaskFileService _taskFileService;
+        private readonly IChangeTrackingService _changeTrackingService;
 
-        public TaskService(TreloDbContext dbContext, IMapper mapper)
+        public TaskService(TreloDbContext dbContext, IMapper mapper, 
+            ITaskFileService taskFileService, 
+            IChangeTrackingService changeTrackingService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _taskFileService = taskFileService;
+            _changeTrackingService = changeTrackingService;
         }
 
         public async Task AssignUserToTask(int taskId, int userId)
@@ -29,13 +38,31 @@ namespace Trelo1.Services
             var task = await _dbContext.Tasks.Include(p => p.AssignedUser).FirstOrDefaultAsync(u => u.Id == taskId);
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             task.AssignedUser = user;
+            _changeTrackingService.TrackChangeGeneric<UserTask, TaskChangesLog>(task, taskId);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task Create(TaskDto userTaskDto)
+        public async Task Create(TaskDto userTaskDto, IList<IFormFile> formFiles, int? taskId)
         {
-            if (userTaskDto != null)
+            if (taskId != null)
             {
+                var task = await _dbContext.Tasks.Include(t => t.TaskFiles).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if(task != null)
+                {
+                    if (formFiles != null)
+                    {
+                        userTaskDto.TaskFiles = _taskFileService.GenereteFilesForTask(formFiles);
+                    }
+                    task = _mapper.Map<UserTask>(userTaskDto);
+
+                    _dbContext.Update(task);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            else if (userTaskDto != null)
+            {
+                userTaskDto.TaskFiles = _taskFileService.GenereteFilesForTask(formFiles);
                 var userTask = _mapper.Map<UserTask>(userTaskDto);
                 _dbContext.Tasks.Add(userTask);
                 await _dbContext.SaveChangesAsync();
@@ -121,55 +148,6 @@ namespace Trelo1.Services
             {
                 return null;
             }
-        }
-
-        public async Task AssigneFileToTask(IFormFile formFile, int taskId)
-        {
-            var task = await _dbContext.Tasks.Include(t => t.TaskFiles).FirstOrDefaultAsync(t => t.Id == taskId);
-            var fileCount = task?.TaskFiles.Count();
-
-            if (fileCount > 5 || task == null)
-            {
-                return;
-            }
-
-            if (formFile?.Length > 0)
-            {
-                var fileNmae = Path.GetFileName(formFile.FileName);
-                var fileExtention = Path.GetExtension(fileNmae);
-                if (!HasAllowedDocument(fileExtention, formFile.Length))
-                {
-                    return;
-                }
-                var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()), fileExtention);
-                var objFilesDto = new TaskFileDto()
-                {
-                    FileName = newFileName,
-                    FileType = fileExtention,
-                    TaskId = taskId,
-                };
-
-                using (var target = new MemoryStream())
-                {
-                    formFile.CopyTo(target);
-                    objFilesDto.DataFiles = target.ToArray();
-                    var objFile = _mapper.Map<TaskFile>(objFilesDto);
-                    _dbContext.Add(objFile);
-                    await _dbContext.SaveChangesAsync();
-                }
-
-            }
-        }
-
-        private bool HasAllowedDocument(string fileExtention, long fileSize)
-        {
-            var allowedTypes = _dbContext.AllowedFileTypes.FirstOrDefault(f => f.FileType == fileExtention);
-            if(allowedTypes != null)
-            {
-                return allowedTypes.AllowedSize >= fileSize / Math.Pow(10, 6) ? true : false; 
-            }
-
-            return false;
         }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TreloDAL.Data;
 
 namespace Trelo1.Migrations
 {
     [DbContext(typeof(TreloDbContext))]
-    partial class TreloDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211102153404_AddUniqueIndexForUserEmail")]
+    partial class AddUniqueIndexForUserEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,6 +213,52 @@ namespace Trelo1.Migrations
                     b.ToTable("TaskFile");
                 });
 
+            modelBuilder.Entity("TreloDAL.Models.TestLogEntityForLog1", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ChangeData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("ChangeTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId");
+
+                    b.ToTable("TestLogEntityForLog1");
+                });
+
+            modelBuilder.Entity("TreloDAL.Models.TestLogEntityForLog2", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ChangeData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("ChangeTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId");
+
+                    b.ToTable("TestLogEntityForLog2");
+                });
+
             modelBuilder.Entity("TreloDAL.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -378,6 +426,28 @@ namespace Trelo1.Migrations
                     b.HasOne("TreloDAL.Models.UserTask", "UserTask")
                         .WithMany("TaskFiles")
                         .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserTask");
+                });
+
+            modelBuilder.Entity("TreloDAL.Models.TestLogEntityForLog1", b =>
+                {
+                    b.HasOne("TreloDAL.Models.UserTask", "UserTask")
+                        .WithMany()
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserTask");
+                });
+
+            modelBuilder.Entity("TreloDAL.Models.TestLogEntityForLog2", b =>
+                {
+                    b.HasOne("TreloDAL.Models.UserTask", "UserTask")
+                        .WithMany()
+                        .HasForeignKey("EntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

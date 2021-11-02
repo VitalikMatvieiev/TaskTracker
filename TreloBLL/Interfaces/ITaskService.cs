@@ -10,14 +10,14 @@ namespace Trelo1.Interfaces
 {
     public interface ITaskService
     {
-        Task Create(TaskDto userTask);
+        Task Create(TaskDto userTask, IList<IFormFile> formFiles, int? taskId);
         Task<bool> Delete(int id);
         Task AssignUserToTask(int taskId, int userId);
         Task<TaskDto> GetTask(int taskId);
         Task<IEnumerable<TaskDto>> GetUserTasks(int userId);
         Task<IEnumerable<TaskDto>> GetBoardTasks(int boardId);
         IEnumerable<TaskDto> GetOrganizationTasks(int organizationId);
-        Task AssigneFileToTask(IFormFile formFile, int taskId);
+        //Task AssigneFileToTask(IList<IFormFile> formFiles, int taskId);
 
     }
 }

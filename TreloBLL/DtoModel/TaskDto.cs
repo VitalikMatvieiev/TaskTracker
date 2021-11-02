@@ -16,5 +16,6 @@ namespace TreloBLL.DtoModel
         public Priority Priority { get; set; }
         public int BoardId { get; set; }
         public int? AssignedUserId { get; set; }
+        public List<TaskFileDto> TaskFiles { get; set; } 
     }
 }

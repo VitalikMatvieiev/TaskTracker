@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
+using TreloBLL.ClaimsPrincipalExtensions;
 using TreloBLL.DtoModel;
+using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
@@ -15,9 +17,11 @@ namespace Trelo1.Controllers
     public class BoardController : ControllerBase
     {
         private readonly IBoardService _boardService;
-        public BoardController(IBoardService boardService)
+        private readonly IAppAuthentication _appAuthentication;
+        public BoardController(IBoardService boardService, IAppAuthentication appAuthentication)
         {
             _boardService = boardService;
+            _appAuthentication = appAuthentication;
         }
 
         [HttpGet]
@@ -46,12 +50,18 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("api/boards/{boardId}/add-user/")]
+        [Route("api/boards/{boardId}/users/")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddUserToBoard(int boardId, SingleModel<int> userId)
         {
-            await _boardService.AddUserToBoard(userId.Value, boardId);
-            return Ok();
+            var currentUserId = User.GetUserId();
+            if (_appAuthentication.HasBoardAsses(currentUserId, boardId))
+            {
+                await _boardService.AddUserToBoard(userId.Value, boardId);
+                return Ok();
+            }
+
+            return StatusCode(401, "You haven't assess to this board");
         }
 
         [HttpDelete]
@@ -59,26 +69,36 @@ namespace Trelo1.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBoard(int boardId)
         {
-            bool hasDeleted = await _boardService.DeleteBoard(boardId);
-            if (hasDeleted)
+            var currentUserId = User.GetUserId();
+            if (_appAuthentication.HasBoardAsses(currentUserId, boardId))
             {
-                return Ok();
+                bool hasDeleted = await _boardService.DeleteBoard(boardId);
+                if (hasDeleted)
+                {
+                    return Ok();
+                }
+                return NoContent();
             }
-            return NoContent();
+            return StatusCode(401, "You haven't assess to this board");
+            
         }
         [HttpDelete]
-        [Route("api/boards/{boardId}/user/")]
+        [Route("api/boards/{boardId}/users/")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserFromBoard(int boardId, SingleModel<int> userId)
         {
-            bool hasDeleted = await _boardService.DeleteUserFromBoard(userId.Value, boardId);
-            if (hasDeleted)
+            var currentUserId = User.GetUserId();
+            if (_appAuthentication.HasBoardAsses(currentUserId, boardId))
             {
-                return Ok();
-            }
+                bool hasDeleted = await _boardService.DeleteUserFromBoard(userId.Value, boardId);
+                if (hasDeleted)
+                {
+                    return Ok();
+                }
 
-            return NoContent();
-            
+                return NoContent();
+            }
+            return StatusCode(401, "You haven't assess to this board");
         }
     }
 }

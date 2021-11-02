@@ -102,7 +102,9 @@ namespace TreloBLL.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim("UserId", user.Id.ToString()),
             };
+
             foreach (var role in user.Role)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role.RoleName));
@@ -125,7 +127,7 @@ namespace TreloBLL.Services
                 audience: AuthOptions.AUDIENCE,
                 notBefore: now,
                 claims: identity.Claims,
-                expires: now.AddMinutes(/*TimeSpan.FromMinutes(AuthOptions.LIFETIME)*/1),
+                expires: now.AddMinutes(/*TimeSpan.FromMinutes(AuthOptions.LIFETIME)*/5),
                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);

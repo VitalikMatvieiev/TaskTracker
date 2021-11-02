@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TreloDAL.Models
 {
-    public class Role : DbContext
+    public class Role
     {
         public int Id { get; set; }
 

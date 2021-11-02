@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,6 @@ namespace Trelo1.Interfaces
         Task<IList<UserDto>> GetUserInOrganization(int organizationId);
         IList<UserDto> GetAllUsers();
         Task<User> GetUserData(string Email);
-        Task AddUserAvatar(string Email, string userAvatar);
+        Task AddUserAvatar(int userId, IFormFile userAvatar);
     }
 }

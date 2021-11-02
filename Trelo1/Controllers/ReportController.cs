@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TreloBLL.ClaimsPrincipalExtensions;
 using TreloBLL.DtoModel;
 using TreloBLL.Interfaces;
 
@@ -16,14 +17,16 @@ namespace Trelo1.Controllers
     public class ReportController : ControllerBase
     {
         private readonly IReportService _reportService;
+        private readonly IAppAuthentication _appAuthentication;
 
-        public ReportController(IReportService reportService)
+        public ReportController(IReportService reportService, IAppAuthentication appAuthentication)
         {
             _reportService = reportService;
+            _appAuthentication = appAuthentication;
         }
 
         [HttpGet]
-        [Route("api/usrers/report/")]
+        [Route("api/users/report/")]
         public IActionResult GetCsvUserTaskReport(SingleModel<int> userId)
         {
             var report = _reportService.GenereteUserTasksReport(userId.Value);
@@ -35,9 +38,14 @@ namespace Trelo1.Controllers
         [Route("api/boards/{boardId}/report/")]
         public IActionResult GetCsvBoardTaskReport(int boardId)
         {
-            var report = _reportService.GenereteBoardTasksReport(boardId);
-            var date = DateTime.Now;
-            return File(Encoding.UTF8.GetBytes(report), "text/csv", $"board_{boardId}_tasks_{date}.csv");
+            var currentUserId = User.GetUserId();
+            if(_appAuthentication.HasBoardAsses(currentUserId, boardId))
+            {
+                var report = _reportService.GenereteBoardTasksReport(boardId);
+                var date = DateTime.Now;
+                return File(Encoding.UTF8.GetBytes(report), "text/csv", $"board_{boardId}_tasks_{date}.csv");
+            }
+            return StatusCode(401, "You haven't assess to this board");
         }
     }
 }

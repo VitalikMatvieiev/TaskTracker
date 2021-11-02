@@ -11,7 +11,7 @@ using TreloBLL.Interfaces;
 namespace Trelo1.Controllers
 {
     [ApiController]
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     public class FileSettingController : ControllerBase
     {
         private readonly IFileService _fileService;
@@ -21,7 +21,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("api/file-setting/add-new")]
+        [Route("api/file/setting/")]
         public IActionResult AddNewFileTypes(AllowedFileTypeDto allowedFileTypeDto)
         {
             if(allowedFileTypeDto != null)
@@ -34,7 +34,7 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("api/file-setting/change/{fileTypeId}")]
+        [Route("api/file/{fileTypeId}/setting/")]
         public IActionResult ChangeFileTypes(int fileTypeId, AllowedFileTypeDto allowedFileTypeDto)
         {
             if (allowedFileTypeDto != null)

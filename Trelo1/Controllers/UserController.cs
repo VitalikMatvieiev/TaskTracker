@@ -8,13 +8,14 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Trelo1.Interfaces;
+using TreloBLL.ClaimsPrincipalExtensions;
 using TreloBLL.DtoModel;
 using TreloBLL.Interfaces;
 
 namespace Trelo1.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -28,6 +29,7 @@ namespace Trelo1.Controllers
 
         [HttpGet]
         [Route("api/users/")]
+        [Authorize(Roles = "Admin")]
         public IList<UserDto> GetAllUsers()
         {
             IList<UserDto> userDtos = _userService.GetAllUsers();
@@ -36,18 +38,20 @@ namespace Trelo1.Controllers
 
         [HttpPost]
         [Route("api/users/")]
-        public IActionResult CreateUser([FromBody] UserDto user)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateUser([FromBody] UserDto user)
         {
-            if(user == null)
+            if (user == null)
             {
                 return BadRequest();
             }
-            _userService.Create(user);
+            await _userService.Create(user);
             return Ok();
         }
         [HttpDelete]
         [Route("api/users/")]
-        public async Task<IActionResult> DeleteUser(SingleModel<int> id)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser([FromBody] SingleModel<int> id)
         {
             bool hasDeleted = await _userService.DeleteUser(id.Value);
             if(hasDeleted)
@@ -58,21 +62,22 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("api/users/add-avatar")]
-        public async Task<IActionResult> AddUserAvatar(IFormFile formFile)
+        [Route("api/users/photos")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> AddUserAvatar([FromForm] IFormFile formFile)
         {
-            if(formFile.Length > 0)
+            var myControllerName = ControllerContext.ActionDescriptor.ActionName;
+            if (formFile?.Length > 0)
             {
-                var userAvatar = _fileService.ConvertToByte64(formFile);
-                var userEmail = User.Identity.Name;
-                await _userService.AddUserAvatar(userEmail, userAvatar);
+                var userId = User.GetUserId();
+                await _userService.AddUserAvatar(userId, formFile);
                 return Ok();
             }
             else
             {
                 return NotFound();
             }
-            
+
         }
 
     }

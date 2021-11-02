@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TreloDAL.Data;
 
 namespace Trelo1.Migrations
 {
     [DbContext(typeof(TreloDbContext))]
-    partial class TreloDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211030123206_first")]
+    partial class first
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,39 +160,12 @@ namespace Trelo1.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("TreloDAL.Models.TaskChangesLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ChangeData")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("ChangeTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("TaskId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskId");
-
-                    b.ToTable("TaskChangesLogs");
-                });
-
             modelBuilder.Entity("TreloDAL.Models.TaskFile", b =>
                 {
                     b.Property<int>("DocumentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ContentType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("DataFiles")
                         .HasColumnType("varbinary(max)");
@@ -218,9 +193,12 @@ namespace Trelo1.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
@@ -232,41 +210,7 @@ namespace Trelo1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("TreloDAL.Models.UserCredentialFile", b =>
-                {
-                    b.Property<int>("FileId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AppFileType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("FileData")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("FileType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("FileId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserCredentialFile");
                 });
 
             modelBuilder.Entity("TreloDAL.Models.UserTask", b =>
@@ -362,17 +306,6 @@ namespace Trelo1.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TreloDAL.Models.TaskChangesLog", b =>
-                {
-                    b.HasOne("TreloDAL.Models.UserTask", "UserTask")
-                        .WithMany()
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserTask");
-                });
-
             modelBuilder.Entity("TreloDAL.Models.TaskFile", b =>
                 {
                     b.HasOne("TreloDAL.Models.UserTask", "UserTask")
@@ -382,17 +315,6 @@ namespace Trelo1.Migrations
                         .IsRequired();
 
                     b.Navigation("UserTask");
-                });
-
-            modelBuilder.Entity("TreloDAL.Models.UserCredentialFile", b =>
-                {
-                    b.HasOne("TreloDAL.Models.User", "User")
-                        .WithMany("UserCredentialFiles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TreloDAL.Models.UserTask", b =>
@@ -425,8 +347,6 @@ namespace Trelo1.Migrations
             modelBuilder.Entity("TreloDAL.Models.User", b =>
                 {
                     b.Navigation("RefreshTokens");
-
-                    b.Navigation("UserCredentialFiles");
 
                     b.Navigation("UserTasks");
                 });

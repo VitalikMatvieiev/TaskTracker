@@ -16,6 +16,7 @@ namespace TreloDAL.Data.Configuration
             builder.ToTable("Users").HasKey(p => p.Id);
 /*            builder.HasOne(p => p.Role).WithMany(p => p.Users).HasForeignKey(p => p.RoleId); ;*/
             builder.Property(p => p.Email).IsRequired();
+            builder.HasIndex(e => e.Email).IsUnique();
             builder.Property(p => p.Password).IsRequired().HasMaxLength(17);
 
         }
