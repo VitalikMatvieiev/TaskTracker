@@ -46,15 +46,19 @@ namespace Trelo1.Services
         {
             if (taskId != null)
             {
-                var task = await _dbContext.Tasks.Include(t => t.TaskFiles).FirstOrDefaultAsync(t => t.Id == taskId);
+                var task = await _dbContext.Tasks.Include(t => t.TaskFiles).AsNoTracking().FirstOrDefaultAsync(t => t.Id == taskId);
 
-                if(task != null)
+                if(task != null && formFiles != null)
                 {
-                    if (formFiles != null)
+                    var files = _taskFileService.GenereteFilesForTask(formFiles);
+                    if(task.TaskFiles.Count() + files.Count() > MaxFileCount)
                     {
-                        userTaskDto.TaskFiles = _taskFileService.GenereteFilesForTask(formFiles);
+                        return;
                     }
+
+                    userTaskDto.TaskFiles.AddRange(files);
                     task = _mapper.Map<UserTask>(userTaskDto);
+                    task.Id = taskId.Value;
 
                     _dbContext.Update(task);
                     await _dbContext.SaveChangesAsync();
