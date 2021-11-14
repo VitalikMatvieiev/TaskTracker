@@ -28,13 +28,14 @@ namespace Trelo1
         {
             Configuration = configuration;
         }
+        private bool FirstRequst = true;
         public IConfiguration Configuration { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-/*          services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);*/
+            /*          services.AddControllers().AddNewtonsoftJson(options =>
+                            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);*/
             services.AddMvc().AddNewtonsoftJson(options=>options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<TreloDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
@@ -49,6 +50,7 @@ namespace Trelo1
             services.AddScoped<ITaskFileService, TaskFileService>();
             services.AddScoped<IAppAuthentication, AppAuthentication>();
             services.AddScoped<IChangeTrackingService, ChangeTrackingService>();
+            services.AddScoped<CodeMigration> ();
 
 
             services.AddAutoMapper(typeof(MappingProfile));
@@ -79,6 +81,12 @@ namespace Trelo1
             {
                 app.UseDeveloperExceptionPage();
             }
+            if (FirstRequst)
+            {
+                app.UseMiddleware<CodeMigrationMiddleware>();
+                FirstRequst = false;
+            }
+            
 
             app.UseHttpsRedirection();
 

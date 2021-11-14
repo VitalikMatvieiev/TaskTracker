@@ -31,8 +31,8 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("/api/tasks/")]
-        public async Task<IActionResult> CreateTask([FromForm]string userTask, [FromForm]IList<IFormFile> formFilesm)
+        [Route("/api/tasks/{taskId?}")]
+        public async Task<IActionResult> CreateTask([FromForm]string userTask, [FromForm]IList<IFormFile> formFilesm, int? taskId)
         {
             var userTaskObj = JsonSerializer.Deserialize<TaskDto>(userTask);
             
@@ -40,7 +40,7 @@ namespace Trelo1.Controllers
 
             if (_appAuthentication.HasBoardAsses(currentUserId, userTaskObj.BoardId))
             {
-                await _taskService.Create(userTaskObj, formFilesm, null);
+                await _taskService.Create(userTaskObj, formFilesm, taskId);
                 return Ok();
             }
 
