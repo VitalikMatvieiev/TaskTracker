@@ -81,12 +81,9 @@ namespace Trelo1
             {
                 app.UseDeveloperExceptionPage();
             }
-            if (FirstRequst)
-            {
-                app.UseMiddleware<CodeMigrationMiddleware>();
-                FirstRequst = false;
-            }
-            
+
+            //if way with middleware is okay, I will add extention method for it
+            app.UseMiddleware<CodeMigrationMiddleware>();
 
             app.UseHttpsRedirection();
 
