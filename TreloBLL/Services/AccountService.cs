@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Trelo1.Interfaces;
 using TreloBLL.DtoModel;
 using TreloBLL.Interfaces;
 using TreloDAL.Data;
@@ -20,21 +21,23 @@ namespace TreloBLL.Services
     {
         private readonly TreloDbContext _dbContext;
         private readonly IMapper _mapper;
-        public AccountService(TreloDbContext dbContext, IMapper mapper)
+        private readonly IUserService _userService;
+        public AccountService(TreloDbContext dbContext, IMapper mapper, IUserService userService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _userService = userService;
         }
 
         public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model, string ip)
         {
-            User user = await _dbContext.Users.Include(p=>p.Role).Include(p=>p.RefreshTokens).FirstOrDefaultAsync(x => x.Email == model.Username && x.Password == model.Password);
-            
-            if(user == null)
+
+            if(!await _userService.CheckUserHashPassword(model.Username, model.Password))
             {
-                return null;
+                return null;   
             }
 
+            User user = await _dbContext.Users.Include(p => p.Role).Include(p => p.RefreshTokens).FirstOrDefaultAsync(x => x.Email == model.Username);
             var jwtToken = GenerateJWTToken(user);
             var refreshTokenDto = GenerateRefreshToken(ip);
 

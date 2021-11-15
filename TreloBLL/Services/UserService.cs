@@ -155,6 +155,10 @@ namespace Trelo1.Services
         public async Task<bool> CheckUserHashPassword(string Email, string password)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == Email);
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException();
+            }
             string userPass = user.Password;
             /* Extract the bytes */
             byte[] hashBytes = Convert.FromBase64String(userPass);
