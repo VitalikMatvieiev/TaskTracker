@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TreloBLL.Interfaces;
 using TreloBLL.Services;
+using TreloBLL.DbInitializer;
 
 namespace Trelo1
 {
@@ -51,6 +52,7 @@ namespace Trelo1
             services.AddScoped<IAppAuthentication, AppAuthentication>();
             services.AddScoped<IChangeTrackingService, ChangeTrackingService>();
             services.AddScoped<CodeMigration> ();
+            services.AddScoped<IDbInitializer, DbInitializer>();
 
 
             services.AddAutoMapper(typeof(MappingProfile));
@@ -83,7 +85,15 @@ namespace Trelo1
             }
 
             //if way with middleware is okay, I will add extention method for it
-            app.UseMiddleware<CodeMigrationMiddleware>();
+            //app.UseMiddleware<CodeMigrationMiddleware>();
+
+            var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+            using (var scope = scopeFactory.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetService<IDbInitializer>();
+                dbInitializer.Initialize();
+                dbInitializer.SeedData();
+            }
 
             app.UseHttpsRedirection();
 

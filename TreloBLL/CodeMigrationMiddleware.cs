@@ -20,7 +20,7 @@ namespace TreloBLL
         {
             this._next = next;
         }
-        public async Task InvokeAsync(HttpContext context, TreloDbContext _dbContext, TreloBLL.Services.CodeMigration codeMigration, IServiceProvider serviceProvider)
+        public async Task InvokeAsync(HttpContext context, TreloDbContext _dbContext, IServiceProvider serviceProvider)
         {
             if (!firstTime)
             {
