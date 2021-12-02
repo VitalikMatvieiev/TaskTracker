@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,9 @@ namespace Trelo1.Controllers
         private readonly IUserService _userService;
         private readonly IAppAuthentication _appAuthentication;
 
-        public TaskController(ITaskService taskService, IUserService userService, IAppAuthentication appAuthentication)
+        public TaskController(ITaskService taskService, 
+            IUserService userService, 
+            IAppAuthentication appAuthentication)
         {
             _taskService = taskService;
             _userService = userService;
@@ -138,6 +141,31 @@ namespace Trelo1.Controllers
                 await _taskService.AssignUserToTask(taskId, userId.Value);
                 return Ok();
             }
+        }
+        
+        [HttpDelete]
+        [Route("/api/users/tasks/{taskId?}")]
+        public async Task<IActionResult> DeleteUserTask(int? taskId)
+        {
+            if(taskId.HasValue)
+            {
+                var hasDeleted = _taskService.Delete(taskId.Value);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpGet]
+        [Route("/api/users/tasks/{taskId}/logs")]
+        public async Task<IActionResult> GetTaskChangesLog(int taskId)
+        {
+            var taskChangesLogs = await _taskService.GetTaskChangeLogs(taskId);
+            if(taskChangesLogs != null)
+            {
+                return Ok(taskChangesLogs);
+            }
+            return NoContent();
         }
     }
 }
