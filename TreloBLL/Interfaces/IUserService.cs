@@ -17,5 +17,7 @@ namespace Trelo1.Interfaces
         IList<UserDto> GetAllUsers();
         Task<User> GetUserData(string Email);
         Task AddUserAvatar(int userId, IFormFile userAvatar);
+        string HashUserPassword(string password);
+        Task<bool> CheckUserHashPassword(string Email, string password);
     }
 }

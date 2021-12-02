@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,9 @@ namespace Trelo1.Controllers
         private readonly IUserService _userService;
         private readonly IAppAuthentication _appAuthentication;
 
-        public TaskController(ITaskService taskService, IUserService userService, IAppAuthentication appAuthentication)
+        public TaskController(ITaskService taskService, 
+            IUserService userService, 
+            IAppAuthentication appAuthentication)
         {
             _taskService = taskService;
             _userService = userService;
@@ -31,8 +34,8 @@ namespace Trelo1.Controllers
         }
 
         [HttpPost]
-        [Route("/api/tasks/")]
-        public async Task<IActionResult> CreateTask([FromForm]string userTask, [FromForm]IList<IFormFile> formFilesm)
+        [Route("/api/tasks/{taskId?}")]
+        public async Task<IActionResult> CreateTask([FromForm]string userTask, [FromForm]IList<IFormFile> formFilesm, int? taskId)
         {
             var userTaskObj = JsonSerializer.Deserialize<TaskDto>(userTask);
             
@@ -40,7 +43,7 @@ namespace Trelo1.Controllers
 
             if (_appAuthentication.HasBoardAsses(currentUserId, userTaskObj.BoardId))
             {
-                await _taskService.Create(userTaskObj, formFilesm, null);
+                await _taskService.Create(userTaskObj, formFilesm, taskId);
                 return Ok();
             }
 
@@ -138,6 +141,31 @@ namespace Trelo1.Controllers
                 await _taskService.AssignUserToTask(taskId, userId.Value);
                 return Ok();
             }
+        }
+        
+        [HttpDelete]
+        [Route("/api/users/tasks/{taskId?}")]
+        public async Task<IActionResult> DeleteUserTask(int? taskId)
+        {
+            if(taskId.HasValue)
+            {
+                var hasDeleted = _taskService.Delete(taskId.Value);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpGet]
+        [Route("/api/users/tasks/{taskId}/logs")]
+        public async Task<IActionResult> GetTaskChangesLog(int taskId)
+        {
+            var taskChangesLogs = await _taskService.GetTaskChangeLogs(taskId);
+            if(taskChangesLogs != null)
+            {
+                return Ok(taskChangesLogs);
+            }
+            return NoContent();
         }
     }
 }

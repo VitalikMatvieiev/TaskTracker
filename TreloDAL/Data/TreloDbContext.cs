@@ -25,6 +25,7 @@ namespace TreloDAL.Data
             modelBuilder.ApplyConfiguration(new AllowedFileTypesEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TaskChangesLogEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserCredentialFileEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CodeMigrationEntityTypeConfiguration());
         }
 
         public DbSet<UserTask> Tasks { get; set; }
@@ -36,6 +37,6 @@ namespace TreloDAL.Data
         public DbSet<AllowedFileTypes> AllowedFileTypes { get; set; }
         public DbSet<TaskChangesLog> TaskChangesLogs { get; set; }
         public DbSet<UserCredentialFile> UserCredentialFiles { get; set; }
-
+        public DbSet<CodeMigration> CodeMigrations { get; set; }
     }
 }

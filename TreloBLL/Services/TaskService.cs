@@ -12,6 +12,11 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.StaticFiles;
 using TreloBLL.Interfaces;
+using Microsoft.Extensions.Logging;
+using nClam;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System.Reflection;
 
 namespace Trelo1.Services
 {
@@ -22,15 +27,23 @@ namespace Trelo1.Services
         private readonly IMapper _mapper;
         private readonly ITaskFileService _taskFileService;
         private readonly IChangeTrackingService _changeTrackingService;
+        private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
+        
 
-        public TaskService(TreloDbContext dbContext, IMapper mapper, 
+        public TaskService(TreloDbContext dbContext, 
+            IMapper mapper, 
             ITaskFileService taskFileService, 
-            IChangeTrackingService changeTrackingService)
+            IChangeTrackingService changeTrackingService,
+            ILogger<TaskService> logger,
+            IConfiguration configuration)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _taskFileService = taskFileService;
             _changeTrackingService = changeTrackingService;
+            _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task AssignUserToTask(int taskId, int userId)
@@ -46,15 +59,26 @@ namespace Trelo1.Services
         {
             if (taskId != null)
             {
-                var task = await _dbContext.Tasks.Include(t => t.TaskFiles).FirstOrDefaultAsync(t => t.Id == taskId);
+                var task = await _dbContext.Tasks.Include(t => t.TaskFiles).AsNoTracking().FirstOrDefaultAsync(t => t.Id == taskId);
 
-                if(task != null)
+                if(task != null && formFiles != null)
                 {
-                    if (formFiles != null)
+                    var files = _taskFileService.GenereteFilesForTask(formFiles);
+
+                    if(task.TaskFiles.Count() + files.Count() > MaxFileCount)
                     {
-                        userTaskDto.TaskFiles = _taskFileService.GenereteFilesForTask(formFiles);
+                        return;
                     }
+
+                    foreach (var file in files)
+                    {
+                        await CheckVirusesInFilesAsync(file);
+                    }
+
+                    userTaskDto.TaskFiles.AddRange(files);
                     task = _mapper.Map<UserTask>(userTaskDto);
+                    task.Id = taskId.Value;
+                    _changeTrackingService.TrackChangeGeneric<UserTask, TaskChangesLog>(task, task.Id);
 
                     _dbContext.Update(task);
                     await _dbContext.SaveChangesAsync();
@@ -63,6 +87,11 @@ namespace Trelo1.Services
             else if (userTaskDto != null)
             {
                 userTaskDto.TaskFiles = _taskFileService.GenereteFilesForTask(formFiles);
+                foreach (var fileDto in userTaskDto.TaskFiles)
+                {
+                    //await CheckVirusesInFilesAsync(fileDto);
+                }
+                
                 var userTask = _mapper.Map<UserTask>(userTaskDto);
                 _dbContext.Tasks.Add(userTask);
                 await _dbContext.SaveChangesAsync();
@@ -149,5 +178,82 @@ namespace Trelo1.Services
                 return null;
             }
         }
+
+        public async Task<string> GetTaskChangeLogs(int taskId)
+        {
+            var taskLogs = await _dbContext.TaskChangesLogs.Where(p=>p.TaskId == taskId).ToArrayAsync();
+            
+            if (taskLogs != null)
+            {
+                string jsonTask = JsonConvert.SerializeObject(taskLogs, Formatting.Indented, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+
+                return jsonTask;
+            }
+            return null;
+        }
+
+        private async Task CheckVirusesInFilesAsync(TaskFileDto taskFileDto)
+        {
+            try
+            {
+                _logger.LogInformation("ClamAV scan begin for file {0}", taskFileDto.FileName);
+                var clam = new ClamClient(_configuration["ClamAVServer:URL"],
+                                          Convert.ToInt32(this._configuration["ClamAVServer:Port"]));
+                var scanResult = await clam.SendAndScanFileAsync(taskFileDto.DataFiles);
+                switch (scanResult.Result)
+                {
+                    case ClamScanResults.Clean:
+                        _logger.LogInformation("The file is clean! ScanResult:{1}", scanResult.RawResult);
+                        break;
+                    case ClamScanResults.VirusDetected:
+                        _logger.LogError("Virus Found! Virus name: {1}", scanResult.InfectedFiles.FirstOrDefault().VirusName);
+                        break;
+                    case ClamScanResults.Error:
+                        _logger.LogError("An error occured while scaning the file! ScanResult: {1}", scanResult.RawResult);
+                        break;
+                    case ClamScanResults.Unknown:
+                        _logger.LogError("Unknown scan result while scaning the file! ScanResult: {0}", scanResult.RawResult);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError("ClamAV Scan Exception: {0}", ex.ToString());
+            }
+            _logger.LogInformation("ClamAV scan completed for file {0}", taskFileDto.FileName);
+        }
+    }
+
+    //block below its test block for comparing two object which isn't the same
+
+    static class extentions
+    {
+        public static List<Variance> DetailedCompare<T>(this T val1, T val2)
+        {
+            List<Variance> variances = new List<Variance>();
+            FieldInfo[] fi = val1.GetType().GetFields();
+            foreach (FieldInfo f in fi)
+            {
+                Variance v = new Variance();
+                v.Prop = f.Name;
+                v.valA = f.GetValue(val1);
+                v.valB = f.GetValue(val2);
+                if (!Equals(v.valA, v.valB))
+                    variances.Add(v);
+
+            }
+            return variances;
+        }
+    }
+    class Variance
+    {
+        public string Prop { get; set; }
+        public object valA { get; set; }
+        public object valB { get; set; }
     }
 }
